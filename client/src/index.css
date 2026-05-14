@@ -167,6 +167,7 @@ textarea {
 }
 
 .forge-hover-lift {
+  isolation: isolate;
   position: relative;
   overflow: hidden;
   transition:
@@ -179,6 +180,7 @@ textarea {
 .forge-hover-lift::before {
   position: absolute;
   inset: 0;
+  z-index: 0;
   content: "";
   pointer-events: none;
   opacity: 0;
@@ -197,6 +199,11 @@ textarea {
 
 .forge-hover-lift:hover::before {
   opacity: 1;
+}
+
+.forge-hover-lift > * {
+  position: relative;
+  z-index: 1;
 }
 
 .forge-row-hover {

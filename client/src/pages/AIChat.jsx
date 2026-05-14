@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Bot, BookMarked, HelpCircle, ListChecks, NotebookTabs, Send, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
+import { useToast } from '../toast/ToastContext'
 
 const quickPrompts = [
   {
@@ -37,6 +38,7 @@ export default function AIChat() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const toast = useToast()
 
   const chatHistory = useMemo(
     () => messages.filter((message) => message.role !== 'system'),
@@ -61,7 +63,9 @@ export default function AIChat() {
       })
       setMessages([...nextMessages, { role: 'assistant', content: response.data.reply }])
     } catch (err) {
-      setError(err.response?.data?.error || 'Unable to reach the AI Forge right now.')
+      const message = err.response?.data?.error || 'Unable to reach the AI Forge right now.'
+      setError(message)
+      toast.error(message)
       setMessages(nextMessages)
     } finally {
       setLoading(false)

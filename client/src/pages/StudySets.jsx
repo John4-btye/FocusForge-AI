@@ -2,6 +2,8 @@ import { Brain, CheckCircle2, ListChecks, NotebookTabs, Save, Trash2 } from 'luc
 import { useEffect, useState } from 'react'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
+import Modal from '../components/Modal'
+import { useToast } from '../toast/ToastContext'
 
 const initialGenerator = {
   topic: '',
@@ -16,9 +18,11 @@ export default function StudySets() {
   const [selectedSet, setSelectedSet] = useState(null)
   const [generatedSet, setGeneratedSet] = useState(null)
   const [generator, setGenerator] = useState(initialGenerator)
+  const [deletingSet, setDeletingSet] = useState(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const toast = useToast()
 
   async function loadStudySets() {
     const response = await api.get('/study-sets')
@@ -43,8 +47,11 @@ export default function StudySets() {
         count: generator.count,
       })
       setGeneratedSet(response.data)
+      toast.success('Study set generated.')
     } catch (err) {
-      setError(err.response?.data?.error || 'Unable to generate a study set.')
+      const message = err.response?.data?.error || 'Unable to generate a study set.'
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
@@ -64,8 +71,11 @@ export default function StudySets() {
       setGeneratedSet(null)
       setGenerator(initialGenerator)
       loadStudySets()
+      toast.success('Study set saved.')
     } catch (err) {
-      setError(err.response?.data?.error || 'Unable to save study set.')
+      const message = err.response?.data?.error || 'Unable to save study set.'
+      setError(message)
+      toast.error(message)
     } finally {
       setSaving(false)
     }
@@ -76,12 +86,22 @@ export default function StudySets() {
     setSelectedSet(response.data)
   }
 
-  async function deleteStudySet(id) {
-    await api.delete(`/study-sets/${id}`)
-    if (selectedSet?.id === id) {
-      setSelectedSet(null)
+  async function confirmDelete() {
+    if (!deletingSet) return
+    setSaving(true)
+    try {
+      await api.delete(`/study-sets/${deletingSet.id}`)
+      if (selectedSet?.id === deletingSet.id) {
+        setSelectedSet(null)
+      }
+      setDeletingSet(null)
+      loadStudySets()
+      toast.success('Study set deleted.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to delete study set.')
+    } finally {
+      setSaving(false)
     }
-    loadStudySets()
   }
 
   return (
@@ -165,7 +185,7 @@ export default function StudySets() {
                       <p className="font-bold text-orange-50">{studySet.title}</p>
                       <p className="mt-1 text-sm text-slate-400">{studySet.item_count} items · {studySet.set_type}</p>
                     </button>
-                    <button onClick={() => deleteStudySet(studySet.id)} className="forge-button-danger inline-flex items-center gap-2 px-3 py-1 text-sm">
+                    <button onClick={() => setDeletingSet(studySet)} className="forge-button-danger inline-flex items-center gap-2 px-3 py-1 text-sm">
                       <Trash2 size={15} />
                       Delete
                     </button>
@@ -183,6 +203,23 @@ export default function StudySets() {
           <StudySetPreview studySet={selectedSet} emptyMessage="Select a saved collection to review it." />
         </div>
       </section>
+
+      <Modal
+        isOpen={Boolean(deletingSet)}
+        title="Delete study set?"
+        onClose={() => setDeletingSet(null)}
+        onSubmit={(event) => {
+          event.preventDefault()
+          confirmDelete()
+        }}
+        submitLabel="Delete set"
+        submitting={saving}
+        danger
+      >
+        <p className="text-sm leading-6 text-slate-300">
+          This will permanently delete {deletingSet?.title} and its saved flashcards or quiz questions.
+        </p>
+      </Modal>
     </div>
   )
 }

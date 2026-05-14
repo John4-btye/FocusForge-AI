@@ -2,12 +2,19 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
+import Modal from '../components/Modal'
+import { useToast } from '../toast/ToastContext'
 
 const initialForm = { name: '', instructor: '', color: '#f97316' }
 
 export default function Courses() {
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
+  const [editingCourse, setEditingCourse] = useState(null)
+  const [editForm, setEditForm] = useState(initialForm)
+  const [deletingCourse, setDeletingCourse] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const toast = useToast()
 
   async function loadCourses() {
     const response = await api.get('/courses')
@@ -20,22 +27,54 @@ export default function Courses() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    await api.post('/courses', form)
-    setForm(initialForm)
-    loadCourses()
+    try {
+      await api.post('/courses', form)
+      setForm(initialForm)
+      loadCourses()
+      toast.success('Course added.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to add course.')
+    }
   }
 
-  async function handleDelete(id) {
-    await api.delete(`/courses/${id}`)
-    loadCourses()
+  function openEditModal(course) {
+    setEditingCourse(course)
+    setEditForm({
+      name: course.name,
+      instructor: course.instructor || '',
+      color: course.color || '#f97316',
+    })
   }
 
-  async function handleEdit(course) {
-    const name = window.prompt('Course name', course.name)
-    if (!name) return
-    const instructor = window.prompt('Instructor', course.instructor || '') || ''
-    await api.patch(`/courses/${course.id}`, { name, instructor })
-    loadCourses()
+  async function handleEditSubmit(event) {
+    event.preventDefault()
+    if (!editingCourse) return
+    setSaving(true)
+    try {
+      await api.patch(`/courses/${editingCourse.id}`, editForm)
+      setEditingCourse(null)
+      loadCourses()
+      toast.success('Course updated.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to update course.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function confirmDelete() {
+    if (!deletingCourse) return
+    setSaving(true)
+    try {
+      await api.delete(`/courses/${deletingCourse.id}`)
+      setDeletingCourse(null)
+      loadCourses()
+      toast.success('Course deleted.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to delete course.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -62,8 +101,8 @@ export default function Courses() {
                   <p className="mt-3 text-sm text-slate-300">{course.task_count} tasks · {course.note_count} notes</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleEdit(course)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
-                  <button onClick={() => handleDelete(course.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
+                  <button onClick={() => openEditModal(course)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+                  <button onClick={() => setDeletingCourse(course)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
                 </div>
               </div>
               <Link className="mt-4 inline-block text-sm font-bold text-amber-300 hover:text-orange-200" to={`/courses/${course.id}`}>View details</Link>
@@ -73,6 +112,45 @@ export default function Courses() {
       ) : (
         <EmptyState title="No courses yet" message="Add your first class or subject to organize tasks and notes." />
       )}
+
+      <Modal
+        isOpen={Boolean(editingCourse)}
+        title="Edit course"
+        onClose={() => setEditingCourse(null)}
+        onSubmit={handleEditSubmit}
+        submitLabel="Save course"
+        submitting={saving}
+      >
+        <label className="block text-sm font-semibold text-orange-100/90">
+          Course name
+          <input className="forge-input mt-2 px-3 py-2" value={editForm.name} onChange={(event) => setEditForm({ ...editForm, name: event.target.value })} required />
+        </label>
+        <label className="block text-sm font-semibold text-orange-100/90">
+          Instructor
+          <input className="forge-input mt-2 px-3 py-2" value={editForm.instructor} onChange={(event) => setEditForm({ ...editForm, instructor: event.target.value })} />
+        </label>
+        <label className="block text-sm font-semibold text-orange-100/90">
+          Accent color
+          <input className="mt-2 h-10 w-full rounded-md border border-orange-200/20 bg-black/30 px-2" type="color" value={editForm.color} onChange={(event) => setEditForm({ ...editForm, color: event.target.value })} />
+        </label>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(deletingCourse)}
+        title="Delete course?"
+        onClose={() => setDeletingCourse(null)}
+        onSubmit={(event) => {
+          event.preventDefault()
+          confirmDelete()
+        }}
+        submitLabel="Delete course"
+        submitting={saving}
+        danger
+      >
+        <p className="text-sm leading-6 text-slate-300">
+          This will delete {deletingCourse?.name} and its related tasks, notes, and study sessions.
+        </p>
+      </Modal>
     </div>
   )
 }

@@ -21,6 +21,11 @@ jwt = JWTManager()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    vite_dev_origins = [
+        origin
+        for port in range(5173, 5180)
+        for origin in (f"http://localhost:{port}", f"http://127.0.0.1:{port}")
+    ]
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -29,12 +34,7 @@ def create_app():
         app,
         resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173",
-                    "http://localhost:5174",
-                    "http://127.0.0.1:5174",
-                ],
+                "origins": vite_dev_origins,
                 "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
             }

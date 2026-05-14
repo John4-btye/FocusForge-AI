@@ -3,6 +3,7 @@ import { useState } from 'react'
 import api from '../api/axios'
 import { useAuth } from '../auth/AuthContext'
 import { useTheme } from '../theme/ThemeContext'
+import { useToast } from '../toast/ToastContext'
 
 export default function Profile() {
   const { user, updateUser } = useAuth()
@@ -15,6 +16,7 @@ export default function Profile() {
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+  const toast = useToast()
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -35,8 +37,11 @@ export default function Profile() {
       updateUser(response.data)
       setForm((current) => ({ ...current, password: '' }))
       setStatus('Profile updated.')
+      toast.success('Profile updated.')
     } catch (err) {
-      setError(err.response?.data?.error || 'Unable to update profile.')
+      const message = err.response?.data?.error || 'Unable to update profile.'
+      setError(message)
+      toast.error(message)
     } finally {
       setSaving(false)
     }

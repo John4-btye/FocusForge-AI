@@ -1,7 +1,9 @@
 import { Pause, Play, RotateCcw, TimerReset } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import api from '../api/axios'
+import Modal from '../components/Modal'
 import { timerOptions, timerSounds, useTimer } from '../timer/TimerContext'
+import { useToast } from '../toast/ToastContext'
 import { formatDate } from '../utils/formatDate'
 
 const initialForm = { course_id: '', duration_minutes: '', session_date: '', notes: '' }
@@ -10,9 +12,14 @@ export default function StudySessions() {
   const [sessions, setSessions] = useState([])
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
+  const [editingSession, setEditingSession] = useState(null)
+  const [editForm, setEditForm] = useState(initialForm)
+  const [deletingSession, setDeletingSession] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [customMinutes, setCustomMinutes] = useState('')
   const [timerCourseId, setTimerCourseId] = useState('')
   const [timerNotes, setTimerNotes] = useState('Focused timer session')
+  const toast = useToast()
   const {
     formattedTime,
     isRunning,
@@ -43,42 +50,81 @@ export default function StudySessions() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    await api.post('/study-sessions', { ...form, course_id: form.course_id || null })
-    setForm(initialForm)
-    loadSessions()
+    try {
+      await api.post('/study-sessions', { ...form, course_id: form.course_id || null })
+      setForm(initialForm)
+      loadSessions()
+      toast.success('Study session logged.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to log study session.')
+    }
   }
 
   function applyCustomTimer() {
     const minutes = Number(customMinutes)
-    if (!minutes || minutes < 1) return
+    if (!minutes || minutes < 1) {
+      toast.error('Enter a custom timer length greater than 0 minutes.')
+      return
+    }
     selectTimer(minutes)
+    toast.info(`Timer set for ${minutes} minutes.`)
   }
 
   async function logCompletedTimer() {
-    await api.post('/study-sessions', {
-      course_id: timerCourseId || null,
-      duration_minutes: timerMinutes,
-      notes: timerNotes || 'Focused timer session',
-    })
-    clearComplete()
-    resetTimer()
-    loadSessions()
+    try {
+      await api.post('/study-sessions', {
+        course_id: timerCourseId || null,
+        duration_minutes: timerMinutes,
+        notes: timerNotes || 'Focused timer session',
+      })
+      clearComplete()
+      resetTimer()
+      loadSessions()
+      toast.success('Completed timer logged as a study session.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to log completed timer.')
+    }
   }
 
-  async function deleteSession(id) {
-    await api.delete(`/study-sessions/${id}`)
-    loadSessions()
+  function openEditModal(session) {
+    setEditingSession(session)
+    setEditForm({
+      course_id: session.course_id || '',
+      duration_minutes: session.duration_minutes || '',
+      session_date: session.session_date || '',
+      notes: session.notes || '',
+    })
   }
 
-  async function editSession(session) {
-    const duration = window.prompt('Duration in minutes', session.duration_minutes)
-    if (!duration) return
-    const notes = window.prompt('Notes', session.notes || '') || ''
-    await api.patch(`/study-sessions/${session.id}`, {
-      duration_minutes: Number(duration),
-      notes,
-    })
-    loadSessions()
+  async function handleEditSubmit(event) {
+    event.preventDefault()
+    if (!editingSession) return
+    setSaving(true)
+    try {
+      await api.patch(`/study-sessions/${editingSession.id}`, { ...editForm, course_id: editForm.course_id || null })
+      setEditingSession(null)
+      loadSessions()
+      toast.success('Study session updated.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to update study session.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function confirmDelete() {
+    if (!deletingSession) return
+    setSaving(true)
+    try {
+      await api.delete(`/study-sessions/${deletingSession.id}`)
+      setDeletingSession(null)
+      loadSessions()
+      toast.success('Study session deleted.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to delete study session.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -217,12 +263,60 @@ export default function StudySessions() {
               <p className="text-sm text-slate-400">{formatDate(session.session_date)} · {session.notes || 'Focused study session'}</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => editSession(session)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
-              <button onClick={() => deleteSession(session.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
+              <button onClick={() => openEditModal(session)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+              <button onClick={() => setDeletingSession(session)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
             </div>
           </article>
         ))}
       </div>
+
+      <Modal
+        isOpen={Boolean(editingSession)}
+        title="Edit study session"
+        onClose={() => setEditingSession(null)}
+        onSubmit={handleEditSubmit}
+        submitLabel="Save session"
+        submitting={saving}
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm font-semibold text-orange-100/90">
+            Duration minutes
+            <input className="forge-input mt-2 px-3 py-2" type="number" min="1" value={editForm.duration_minutes} onChange={(event) => setEditForm({ ...editForm, duration_minutes: event.target.value })} required />
+          </label>
+          <label className="block text-sm font-semibold text-orange-100/90">
+            Date
+            <input className="forge-input mt-2 px-3 py-2" type="date" value={editForm.session_date} onChange={(event) => setEditForm({ ...editForm, session_date: event.target.value })} />
+          </label>
+        </div>
+        <label className="block text-sm font-semibold text-orange-100/90">
+          Course
+          <select className="forge-input mt-2 px-3 py-2" value={editForm.course_id} onChange={(event) => setEditForm({ ...editForm, course_id: event.target.value })}>
+            <option value="">No course</option>
+            {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
+          </select>
+        </label>
+        <label className="block text-sm font-semibold text-orange-100/90">
+          Notes
+          <textarea className="forge-input mt-2 min-h-28 px-3 py-2" value={editForm.notes} onChange={(event) => setEditForm({ ...editForm, notes: event.target.value })} />
+        </label>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(deletingSession)}
+        title="Delete study session?"
+        onClose={() => setDeletingSession(null)}
+        onSubmit={(event) => {
+          event.preventDefault()
+          confirmDelete()
+        }}
+        submitLabel="Delete session"
+        submitting={saving}
+        danger
+      >
+        <p className="text-sm leading-6 text-slate-300">
+          This will permanently delete the {deletingSession?.duration_minutes}-minute study session.
+        </p>
+      </Modal>
     </div>
   )
 }
