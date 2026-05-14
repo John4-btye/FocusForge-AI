@@ -15,21 +15,22 @@ FocusForge AI is a full-stack student productivity app built with React, Flask, 
 - PostgreSQL
 - Google Gemini API
 
-## Setup
+## Setup And Run Instructions
+
+Clone the repository, then set up the backend and frontend in separate terminal windows.
 
 ### Backend
 
 ```bash
 cd server
+python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
 createdb focusforge_ai
-flask db init
-flask db migrate -m "Initial tables"
 flask db upgrade
-flask run
 ```
 
-Create `server/.env` first:
+Create `server/.env`:
 
 ```env
 FLASK_ENV=development
@@ -39,19 +40,32 @@ GEMINI_API_KEY=replace-this-with-your-google-ai-studio-key
 GEMINI_MODEL=gemini-2.5-flash
 ```
 
+Start the Flask API on port `5002`:
+
+```bash
+venv/bin/python -m flask --app app run --port 5002
+```
+
 ### Frontend
 
 ```bash
 cd client
 npm install
+```
+
+Create `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5002/api
+```
+
+Start the React app:
+
+```bash
 npm run dev
 ```
 
-Create `client/.env` if the backend URL changes:
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
+Open the local Vite URL shown in the terminal, usually `http://localhost:5173`.
 
 ## Core Functionality
 
