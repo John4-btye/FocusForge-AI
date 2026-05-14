@@ -54,38 +54,41 @@ export default function Tasks() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-slate-950">Tasks</h2>
-      <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg bg-white p-5 shadow-sm lg:grid-cols-5">
-        <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Task title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
-        <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
-        <input className="rounded-md border border-slate-300 px-3 py-2" type="date" value={form.due_date} onChange={(event) => setForm({ ...form, due_date: event.target.value })} />
-        <select className="rounded-md border border-slate-300 px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Assignment forge</p>
+        <h2 className="forge-page-title mt-1">Tasks</h2>
+      </div>
+      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 lg:grid-cols-5">
+        <input className="forge-input px-3 py-2" placeholder="Task title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
+        <input className="forge-input px-3 py-2" placeholder="Description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
+        <input className="forge-input px-3 py-2" type="date" value={form.due_date} onChange={(event) => setForm({ ...form, due_date: event.target.value })} />
+        <select className="forge-input px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
           <option value="">No course</option>
           {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
         </select>
-        <button className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Add task</button>
+        <button className="forge-button px-4 py-2">Add task</button>
       </form>
       <div className="space-y-3">
         {tasks.map((task) => (
-          <article key={task.id} className="flex items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-sm">
+          <article key={task.id} className="forge-card flex items-center justify-between gap-4 rounded-lg p-4">
             <label className="flex min-w-0 items-start gap-3">
-              <input className="mt-1" type="checkbox" checked={task.completed} onChange={() => toggleTask(task)} />
+              <input className="mt-1 accent-orange-500" type="checkbox" checked={task.completed} onChange={() => toggleTask(task)} />
               <span>
-                <span className={`block font-medium ${task.completed ? 'text-slate-400 line-through' : 'text-slate-950'}`}>{task.title}</span>
-                <span className="block text-sm text-slate-500">{formatDate(task.due_date)} · {task.priority}</span>
+                <span className={`block font-semibold ${task.completed ? 'text-slate-500 line-through' : 'text-orange-50'}`}>{task.title}</span>
+                <span className="block text-sm text-slate-400">{formatDate(task.due_date)} · {task.priority}</span>
               </span>
             </label>
             <div className="flex gap-2">
-              <button onClick={() => editTask(task)} className="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">Edit</button>
-              <button onClick={() => deleteTask(task.id)} className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Delete</button>
+              <button onClick={() => editTask(task)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+              <button onClick={() => deleteTask(task.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
             </div>
           </article>
         ))}
       </div>
       <div className="flex items-center justify-end gap-3">
-        <button disabled={page <= 1} onClick={() => loadTasks(page - 1)} className="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Previous</button>
-        <span className="text-sm text-slate-600">Page {page} of {pages}</span>
-        <button disabled={page >= pages} onClick={() => loadTasks(page + 1)} className="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Next</button>
+        <button disabled={page <= 1} onClick={() => loadTasks(page - 1)} className="forge-button-subtle px-3 py-2 text-sm disabled:opacity-40">Previous</button>
+        <span className="text-sm text-slate-400">Page {page} of {pages}</span>
+        <button disabled={page >= pages} onClick={() => loadTasks(page + 1)} className="forge-button-subtle px-3 py-2 text-sm disabled:opacity-40">Next</button>
       </div>
     </div>
   )

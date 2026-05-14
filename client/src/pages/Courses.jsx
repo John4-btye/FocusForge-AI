@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
 
-const initialForm = { name: '', instructor: '', color: '#0f766e' }
+const initialForm = { name: '', instructor: '', color: '#f97316' }
 
 export default function Courses() {
   const [courses, setCourses] = useState([])
@@ -40,30 +40,33 @@ export default function Courses() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-slate-950">Courses</h2>
-      <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg bg-white p-5 shadow-sm md:grid-cols-[1fr_1fr_auto_auto]">
-        <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Course name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
-        <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Instructor" value={form.instructor} onChange={(event) => setForm({ ...form, instructor: event.target.value })} />
-        <input className="h-10 rounded-md border border-slate-300 px-2" type="color" value={form.color} onChange={(event) => setForm({ ...form, color: event.target.value })} />
-        <button className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Add</button>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Academic materials</p>
+        <h2 className="forge-page-title mt-1">Courses</h2>
+      </div>
+      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 md:grid-cols-[1fr_1fr_auto_auto]">
+        <input className="forge-input px-3 py-2" placeholder="Course name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
+        <input className="forge-input px-3 py-2" placeholder="Instructor" value={form.instructor} onChange={(event) => setForm({ ...form, instructor: event.target.value })} />
+        <input className="h-10 rounded-md border border-orange-200/20 bg-black/30 px-2" type="color" value={form.color} onChange={(event) => setForm({ ...form, color: event.target.value })} />
+        <button className="forge-button px-4 py-2">Add</button>
       </form>
       {courses.length ? (
         <div className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
-            <article key={course.id} className="rounded-lg bg-white p-5 shadow-sm">
+            <article key={course.id} className="forge-card-hot rounded-lg p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="mb-3 h-2 w-16 rounded-full" style={{ background: course.color }} />
-                  <h3 className="text-lg font-semibold text-slate-950">{course.name}</h3>
-                  <p className="text-sm text-slate-500">{course.instructor || 'No instructor listed'}</p>
-                  <p className="mt-3 text-sm text-slate-600">{course.task_count} tasks · {course.note_count} notes</p>
+                  <div className="mb-3 h-2 w-16 rounded-full shadow-[0_0_18px_rgba(249,115,22,0.32)]" style={{ background: course.color }} />
+                  <h3 className="text-lg font-bold text-orange-50">{course.name}</h3>
+                  <p className="text-sm text-slate-400">{course.instructor || 'No instructor listed'}</p>
+                  <p className="mt-3 text-sm text-slate-300">{course.task_count} tasks · {course.note_count} notes</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleEdit(course)} className="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">Edit</button>
-                  <button onClick={() => handleDelete(course.id)} className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Delete</button>
+                  <button onClick={() => handleEdit(course)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+                  <button onClick={() => handleDelete(course.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
                 </div>
               </div>
-              <Link className="mt-4 inline-block text-sm font-medium text-teal-700" to={`/courses/${course.id}`}>View details</Link>
+              <Link className="mt-4 inline-block text-sm font-bold text-amber-300 hover:text-orange-200" to={`/courses/${course.id}`}>View details</Link>
             </article>
           ))}
         </div>

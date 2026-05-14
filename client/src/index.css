@@ -1,9 +1,29 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+  --forge-bg: #090b10;
+  --forge-bg-soft: #111722;
+  --forge-panel: rgba(18, 23, 32, 0.9);
+  --forge-panel-strong: rgba(26, 31, 40, 0.96);
+  --forge-border: rgba(248, 177, 65, 0.18);
+  --forge-border-cool: rgba(148, 163, 184, 0.16);
+  --forge-text: #fff7ed;
+  --forge-muted: #a8b0bd;
+  --forge-faint: #687284;
+  --forge-ember: #f97316;
+  --forge-gold: #f8b12d;
+  --forge-amber: #ffcf70;
+  --forge-danger: #fb7185;
+}
+
 body {
   margin: 0;
-  background: #f6f7fb;
-  color: #172033;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(249, 115, 22, 0.22), transparent 30rem),
+    radial-gradient(circle at 85% 8%, rgba(248, 177, 45, 0.1), transparent 24rem),
+    linear-gradient(135deg, #08090d 0%, #10151d 48%, #17100b 100%);
+  color: var(--forge-text);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -18,4 +38,130 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+::selection {
+  background: rgba(248, 177, 45, 0.35);
+  color: #fff7ed;
+}
+
+.forge-bg {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(249, 115, 22, 0.16), transparent 24rem),
+    radial-gradient(circle at 80% 0%, rgba(248, 177, 45, 0.08), transparent 26rem),
+    linear-gradient(145deg, #080a0f 0%, #111722 52%, #130d0a 100%);
+}
+
+.forge-card {
+  border: 1px solid var(--forge-border-cool);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    var(--forge-panel);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.forge-card-hot {
+  border: 1px solid var(--forge-border);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(249, 115, 22, 0.16), transparent 12rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
+    var(--forge-panel-strong);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.34),
+    0 0 34px rgba(249, 115, 22, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.forge-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(8, 10, 15, 0.74);
+  color: var(--forge-text);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.forge-input::placeholder {
+  color: rgba(168, 176, 189, 0.62);
+}
+
+.forge-input:focus {
+  border-color: rgba(248, 177, 45, 0.72);
+  box-shadow: 0 0 0 3px rgba(248, 177, 45, 0.14);
+  background: rgba(10, 13, 19, 0.95);
+}
+
+.forge-button {
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #f8b12d 0%, #f97316 55%, #b94308 100%);
+  color: #160c05;
+  font-weight: 800;
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.24);
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.forge-button:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 16px 36px rgba(249, 115, 22, 0.34);
+  transform: translateY(-1px);
+}
+
+.forge-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6) brightness(0.7);
+  opacity: 0.55;
+  transform: none;
+}
+
+.forge-button-subtle {
+  border: 1px solid rgba(248, 177, 45, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.035);
+  color: #f6d8a2;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.forge-button-subtle:hover {
+  border-color: rgba(248, 177, 45, 0.42);
+  background: rgba(248, 177, 45, 0.08);
+  color: #fff7ed;
+}
+
+.forge-button-danger {
+  border: 1px solid rgba(251, 113, 133, 0.28);
+  border-radius: 0.5rem;
+  background: rgba(127, 29, 29, 0.22);
+  color: #fecdd3;
+}
+
+.forge-button-danger:hover {
+  background: rgba(127, 29, 29, 0.36);
+  border-color: rgba(251, 113, 133, 0.5);
+}
+
+.forge-page-title {
+  color: var(--forge-text);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.forge-muted {
+  color: var(--forge-muted);
+}
+
+.forge-divider-glow {
+  background: linear-gradient(90deg, transparent, rgba(248, 177, 45, 0.9), transparent);
 }

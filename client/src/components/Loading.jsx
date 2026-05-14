@@ -1,7 +1,7 @@
 export default function Loading({ label = 'Loading...' }) {
   return (
-    <div className="grid min-h-screen place-items-center bg-slate-100 text-slate-600">
-      <div className="rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-sm">
+    <div className="forge-bg grid min-h-screen place-items-center text-slate-300">
+      <div className="forge-card-hot rounded-lg px-5 py-4">
         {label}
       </div>
     </div>

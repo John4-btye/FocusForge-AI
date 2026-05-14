@@ -49,36 +49,39 @@ export default function Notes() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-slate-950">Notes</h2>
-      <form onSubmit={handleSubmit} className="space-y-3 rounded-lg bg-white p-5 shadow-sm">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Knowledge anvil</p>
+        <h2 className="forge-page-title mt-1">Notes</h2>
+      </div>
+      <form onSubmit={handleSubmit} className="forge-card space-y-3 rounded-lg p-5">
         <div className="grid gap-3 md:grid-cols-2">
-          <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Note title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
-          <select className="rounded-md border border-slate-300 px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
+          <input className="forge-input px-3 py-2" placeholder="Note title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
+          <select className="forge-input px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
             <option value="">No course</option>
             {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
           </select>
         </div>
-        <textarea className="min-h-32 w-full rounded-md border border-slate-300 px-3 py-2" placeholder="Write your note..." value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} required />
-        <button className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Add note</button>
+        <textarea className="forge-input min-h-32 px-3 py-2" placeholder="Write your note..." value={form.content} onChange={(event) => setForm({ ...form, content: event.target.value })} required />
+        <button className="forge-button px-4 py-2">Add note</button>
       </form>
       <div className="grid gap-4 md:grid-cols-2">
         {notes.map((note) => (
-          <article key={note.id} className="rounded-lg bg-white p-5 shadow-sm">
+          <article key={note.id} className="forge-card rounded-lg p-5">
             <div className="flex items-start justify-between gap-4">
-              <h3 className="font-semibold text-slate-950">{note.title}</h3>
+              <h3 className="font-bold text-orange-50">{note.title}</h3>
               <div className="flex gap-2">
-                <button onClick={() => editNote(note)} className="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">Edit</button>
-                <button onClick={() => deleteNote(note.id)} className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Delete</button>
+                <button onClick={() => editNote(note)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+                <button onClick={() => deleteNote(note.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
               </div>
             </div>
-            <p className="mt-3 whitespace-pre-wrap text-sm text-slate-600">{note.content}</p>
+            <p className="mt-3 whitespace-pre-wrap text-sm text-slate-400">{note.content}</p>
           </article>
         ))}
       </div>
       <div className="flex items-center justify-end gap-3">
-        <button disabled={page <= 1} onClick={() => loadNotes(page - 1)} className="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Previous</button>
-        <span className="text-sm text-slate-600">Page {page} of {pages}</span>
-        <button disabled={page >= pages} onClick={() => loadNotes(page + 1)} className="rounded-md border border-slate-300 px-3 py-2 text-sm disabled:opacity-40">Next</button>
+        <button disabled={page <= 1} onClick={() => loadNotes(page - 1)} className="forge-button-subtle px-3 py-2 text-sm disabled:opacity-40">Previous</button>
+        <span className="text-sm text-slate-400">Page {page} of {pages}</span>
+        <button disabled={page >= pages} onClick={() => loadNotes(page + 1)} className="forge-button-subtle px-3 py-2 text-sm disabled:opacity-40">Next</button>
       </div>
     </div>
   )

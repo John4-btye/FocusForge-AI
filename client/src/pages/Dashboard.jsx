@@ -10,13 +10,14 @@ export default function Dashboard() {
     api.get('/dashboard').then((response) => setData(response.data))
   }, [])
 
-  if (!data) return <div className="text-slate-600">Loading dashboard...</div>
+  if (!data) return <div className="forge-muted">Loading dashboard...</div>
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold text-slate-950">Dashboard</h2>
-        <p className="text-sm text-slate-600">{data.productivity_tip}</p>
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Command center</p>
+        <h2 className="forge-page-title mt-1">Dashboard</h2>
+        <p className="text-sm text-slate-400">{data.productivity_tip}</p>
       </div>
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Courses" value={data.course_count} />
@@ -29,9 +30,9 @@ export default function Dashboard() {
           {data.upcoming_tasks.length ? (
             <div className="space-y-3">
               {data.upcoming_tasks.map((task) => (
-                <div key={task.id} className="rounded-md border border-slate-200 p-3">
-                  <p className="font-medium text-slate-900">{task.title}</p>
-                  <p className="text-sm text-slate-500">{formatDate(task.due_date)}</p>
+                <div key={task.id} className="rounded-md border border-orange-200/10 bg-black/18 p-3">
+                  <p className="font-semibold text-orange-50">{task.title}</p>
+                  <p className="text-sm text-slate-400">{formatDate(task.due_date)}</p>
                 </div>
               ))}
             </div>
@@ -43,9 +44,9 @@ export default function Dashboard() {
           {data.recent_notes.length ? (
             <div className="space-y-3">
               {data.recent_notes.map((note) => (
-                <div key={note.id} className="rounded-md border border-slate-200 p-3">
-                  <p className="font-medium text-slate-900">{note.title}</p>
-                  <p className="line-clamp-2 text-sm text-slate-500">{note.content}</p>
+                <div key={note.id} className="rounded-md border border-orange-200/10 bg-black/18 p-3">
+                  <p className="font-semibold text-orange-50">{note.title}</p>
+                  <p className="line-clamp-2 text-sm text-slate-400">{note.content}</p>
                 </div>
               ))}
             </div>
@@ -60,17 +61,17 @@ export default function Dashboard() {
 
 function Stat({ label, value }) {
   return (
-    <div className="rounded-lg bg-white p-5 shadow-sm">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-slate-950">{value}</p>
+    <div className="forge-card-hot rounded-lg p-5">
+      <p className="text-sm font-semibold text-slate-400">{label}</p>
+      <p className="mt-2 text-3xl font-black text-amber-200">{value}</p>
     </div>
   )
 }
 
 function Panel({ title, children }) {
   return (
-    <div className="rounded-lg bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-lg font-semibold text-slate-950">{title}</h3>
+    <div className="forge-card rounded-lg p-5">
+      <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>
       {children}
     </div>
   )

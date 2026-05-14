@@ -44,27 +44,30 @@ export default function StudySessions() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-slate-950">Study Sessions</h2>
-      <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg bg-white p-5 shadow-sm lg:grid-cols-5">
-        <select className="rounded-md border border-slate-300 px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Time tempered</p>
+        <h2 className="forge-page-title mt-1">Study Sessions</h2>
+      </div>
+      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 lg:grid-cols-5">
+        <select className="forge-input px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
           <option value="">No course</option>
           {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
         </select>
-        <input className="rounded-md border border-slate-300 px-3 py-2" type="number" min="1" placeholder="Minutes" value={form.duration_minutes} onChange={(event) => setForm({ ...form, duration_minutes: event.target.value })} required />
-        <input className="rounded-md border border-slate-300 px-3 py-2" type="date" value={form.session_date} onChange={(event) => setForm({ ...form, session_date: event.target.value })} />
-        <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Notes" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
-        <button className="rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">Log study</button>
+        <input className="forge-input px-3 py-2" type="number" min="1" placeholder="Minutes" value={form.duration_minutes} onChange={(event) => setForm({ ...form, duration_minutes: event.target.value })} required />
+        <input className="forge-input px-3 py-2" type="date" value={form.session_date} onChange={(event) => setForm({ ...form, session_date: event.target.value })} />
+        <input className="forge-input px-3 py-2" placeholder="Notes" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
+        <button className="forge-button px-4 py-2">Log study</button>
       </form>
       <div className="space-y-3">
         {sessions.map((session) => (
-          <article key={session.id} className="flex items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-sm">
+          <article key={session.id} className="forge-card flex items-center justify-between gap-4 rounded-lg p-4">
             <div>
-              <p className="font-medium text-slate-950">{session.duration_minutes} minutes</p>
-              <p className="text-sm text-slate-500">{formatDate(session.session_date)} · {session.notes || 'Focused study session'}</p>
+              <p className="font-bold text-orange-50">{session.duration_minutes} minutes</p>
+              <p className="text-sm text-slate-400">{formatDate(session.session_date)} · {session.notes || 'Focused study session'}</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => editSession(session)} className="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 hover:bg-slate-50">Edit</button>
-              <button onClick={() => deleteSession(session.id)} className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-700 hover:bg-red-50">Delete</button>
+              <button onClick={() => editSession(session)} className="forge-button-subtle px-3 py-1 text-sm">Edit</button>
+              <button onClick={() => deleteSession(session.id)} className="forge-button-danger px-3 py-1 text-sm">Delete</button>
             </div>
           </article>
         ))}

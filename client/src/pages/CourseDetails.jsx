@@ -11,14 +11,14 @@ export default function CourseDetails() {
     api.get(`/courses/${id}`).then((response) => setCourse(response.data))
   }, [id])
 
-  if (!course) return <div className="text-slate-600">Loading course...</div>
+  if (!course) return <div className="forge-muted">Loading course...</div>
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg bg-white p-5 shadow-sm">
-        <div className="h-2 w-20 rounded-full" style={{ background: course.color }} />
-        <h2 className="mt-4 text-2xl font-semibold text-slate-950">{course.name}</h2>
-        <p className="text-slate-600">{course.instructor || 'No instructor listed'}</p>
+      <div className="forge-card-hot rounded-lg p-5">
+        <div className="h-2 w-20 rounded-full shadow-[0_0_18px_rgba(249,115,22,0.32)]" style={{ background: course.color }} />
+        <h2 className="mt-4 text-2xl font-black text-orange-50">{course.name}</h2>
+        <p className="text-slate-400">{course.instructor || 'No instructor listed'}</p>
       </div>
       <section className="grid gap-6 lg:grid-cols-2">
         <Panel title="Course tasks">
@@ -34,8 +34,8 @@ export default function CourseDetails() {
 
 function Panel({ title, children }) {
   return (
-    <div className="rounded-lg bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-lg font-semibold text-slate-950">{title}</h3>
+    <div className="forge-card rounded-lg p-5">
+      <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>
       <div className="space-y-3">{children}</div>
     </div>
   )
@@ -43,9 +43,9 @@ function Panel({ title, children }) {
 
 function Item({ title, text }) {
   return (
-    <div className="rounded-md border border-slate-200 p-3">
-      <p className="font-medium text-slate-900">{title}</p>
-      <p className="line-clamp-2 text-sm text-slate-500">{text}</p>
+    <div className="rounded-md border border-orange-200/10 bg-black/18 p-3">
+      <p className="font-semibold text-orange-50">{title}</p>
+      <p className="line-clamp-2 text-sm text-slate-400">{text}</p>
     </div>
   )
 }

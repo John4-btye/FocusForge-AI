@@ -22,7 +22,7 @@ function App() {
           path="/*"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen bg-slate-100">
+              <div className="forge-bg min-h-screen">
                 <Navbar />
                 <div className="mx-auto flex max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
                   <Sidebar />

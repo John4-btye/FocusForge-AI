@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import BrandMark from '../components/BrandMark'
 
 export default function Login() {
   const { login } = useAuth()
@@ -20,36 +21,38 @@ export default function Login() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-100 px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-8 shadow-sm">
-        <p className="text-sm font-medium text-teal-700">FocusForge AI</p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-950">Welcome back</h1>
-        {error && <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-        <label className="mt-6 block text-sm font-medium text-slate-700">
+    <main className="forge-bg grid min-h-screen place-items-center px-4 py-10">
+      <form onSubmit={handleSubmit} className="forge-card-hot w-full max-w-md rounded-lg p-8">
+        <BrandMark />
+        <div className="forge-divider-glow my-6 h-px" />
+        <h1 className="text-2xl font-black text-orange-50">Welcome back</h1>
+        <p className="mt-2 text-sm text-slate-400">Step back into the forge and shape today’s study plan.</p>
+        {error && <p className="mt-4 rounded-md border border-red-300/20 bg-red-950/40 p-3 text-sm text-red-200">{error}</p>}
+        <label className="mt-6 block text-sm font-semibold text-orange-100/90">
           Email
           <input
             type="email"
             value={form.email}
             onChange={(event) => setForm({ ...form, email: event.target.value })}
-            className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2"
+            className="forge-input mt-2 px-3 py-2"
             required
           />
         </label>
-        <label className="mt-4 block text-sm font-medium text-slate-700">
+        <label className="mt-4 block text-sm font-semibold text-orange-100/90">
           Password
           <input
             type="password"
             value={form.password}
             onChange={(event) => setForm({ ...form, password: event.target.value })}
-            className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2"
+            className="forge-input mt-2 px-3 py-2"
             required
           />
         </label>
-        <button className="mt-6 w-full rounded-md bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800">
+        <button className="forge-button mt-6 w-full px-4 py-2.5">
           Login
         </button>
-        <p className="mt-4 text-center text-sm text-slate-600">
-          New here? <Link className="font-medium text-teal-700" to="/signup">Create an account</Link>
+        <p className="mt-4 text-center text-sm text-slate-400">
+          New here? <Link className="font-semibold text-amber-300 hover:text-orange-200" to="/signup">Create an account</Link>
         </p>
       </form>
     </main>
