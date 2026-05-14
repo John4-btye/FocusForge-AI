@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from config import Config
 from models import db
 from routes.auth_routes import auth_bp
+from routes.ai_routes import ai_bp
 from routes.course_routes import course_bp
 from routes.dashboard_routes import dashboard_bp
 from routes.note_routes import note_bp
@@ -27,7 +28,12 @@ def create_app():
         app,
         resources={
             r"/api/*": {
-                "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+                "origins": [
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                    "http://localhost:5174",
+                    "http://127.0.0.1:5174",
+                ],
                 "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
             }
@@ -35,6 +41,7 @@ def create_app():
     )
 
     app.register_blueprint(auth_bp, url_prefix="/api")
+    app.register_blueprint(ai_bp, url_prefix="/api/ai")
     app.register_blueprint(course_bp, url_prefix="/api/courses")
     app.register_blueprint(task_bp, url_prefix="/api/tasks")
     app.register_blueprint(note_bp, url_prefix="/api/notes")

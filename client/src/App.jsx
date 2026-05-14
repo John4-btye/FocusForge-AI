@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import Courses from './pages/Courses'
 import CourseDetails from './pages/CourseDetails'
 import Dashboard from './pages/Dashboard'
+import AIChat from './pages/AIChat'
 import Login from './pages/Login'
 import Notes from './pages/Notes'
 import Signup from './pages/Signup'
@@ -35,6 +36,7 @@ function App() {
                       <Route path="/tasks" element={<Tasks />} />
                       <Route path="/notes" element={<Notes />} />
                       <Route path="/study-sessions" element={<StudySessions />} />
+                      <Route path="/ai-chat" element={<AIChat />} />
                     </Routes>
                   </main>
                 </div>

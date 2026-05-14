@@ -13,6 +13,7 @@ FocusForge AI is a full-stack student productivity app built with React, Flask, 
 - Flask-Migrate
 - Flask-JWT-Extended
 - PostgreSQL
+- Google Gemini API
 
 ## Setup
 
@@ -34,6 +35,8 @@ Create `server/.env` first:
 FLASK_ENV=development
 DATABASE_URL=postgresql://localhost/focusforge_ai
 JWT_SECRET_KEY=replace-this-with-a-secret-key
+GEMINI_API_KEY=replace-this-with-your-google-ai-studio-key
+GEMINI_MODEL=gemini-2.5-flash
 ```
 
 ### Frontend
@@ -60,7 +63,10 @@ VITE_API_URL=http://localhost:5000/api
 - Notes CRUD with pagination
 - Study session CRUD
 - Dashboard summary data
+- AI Forge chatbot for flashcards, quizzes, navigation help, explanations, and study planning
 
-## Later Enhancement
+## AI Setup
 
-The AI Study Summary Generator will be added after the MVP is working.
+FocusForge AI uses Gemini 2.5 Flash for the chatbot. Create a free Gemini API key in Google AI Studio, add it to `server/.env` as `GEMINI_API_KEY`, then restart the Flask backend.
+
+The AI route is protected, so users must be logged in before using the chatbot.

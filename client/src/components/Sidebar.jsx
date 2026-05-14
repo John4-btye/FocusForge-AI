@@ -1,4 +1,4 @@
-import { BookOpen, ClipboardList, LayoutDashboard, NotebookPen, Timer } from 'lucide-react'
+import { BookOpen, Bot, ClipboardList, LayoutDashboard, NotebookPen, Timer } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const links = [
@@ -7,6 +7,7 @@ const links = [
   { to: '/tasks', label: 'Tasks', icon: ClipboardList },
   { to: '/notes', label: 'Notes', icon: NotebookPen },
   { to: '/study-sessions', label: 'Study', icon: Timer },
+  { to: '/ai-chat', label: 'AI Forge', icon: Bot },
 ]
 
 export default function Sidebar() {
