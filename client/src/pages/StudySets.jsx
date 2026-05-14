@@ -95,7 +95,7 @@ export default function StudySets() {
       </div>
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <form onSubmit={generateSet} className="forge-card-hot rounded-lg p-5">
+        <form onSubmit={generateSet} className="forge-card-hot forge-hover-lift rounded-lg p-5">
           <div className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-md bg-orange-500/15 text-amber-300">
               <Brain size={22} />
@@ -141,7 +141,7 @@ export default function StudySets() {
           </button>
         </form>
 
-        <div className="forge-card rounded-lg p-5">
+        <div className="forge-card forge-hover-lift rounded-lg p-5">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-lg font-black text-orange-50">Generated preview</h3>
             <button disabled={!generatedSet || saving} onClick={saveGeneratedSet} className="forge-button inline-flex items-center gap-2 px-4 py-2 disabled:opacity-40">
@@ -154,12 +154,12 @@ export default function StudySets() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <div className="forge-card rounded-lg p-5">
+        <div className="forge-card forge-hover-lift rounded-lg p-5">
           <h3 className="mb-4 text-lg font-black text-orange-50">Saved collections</h3>
           {studySets.length ? (
             <div className="space-y-3">
               {studySets.map((studySet) => (
-                <article key={studySet.id} className="rounded-md border border-orange-200/10 bg-black/18 p-4">
+                <article key={studySet.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <button type="button" onClick={() => openStudySet(studySet.id)} className="min-w-0 text-left">
                       <p className="font-bold text-orange-50">{studySet.title}</p>
@@ -178,7 +178,7 @@ export default function StudySets() {
           )}
         </div>
 
-        <div className="forge-card-hot rounded-lg p-5">
+        <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
           <h3 className="mb-4 text-lg font-black text-orange-50">Collection viewer</h3>
           <StudySetPreview studySet={selectedSet} emptyMessage="Select a saved collection to review it." />
         </div>
@@ -209,7 +209,7 @@ function StudySetPreview({ studySet, emptyMessage }) {
 
       <div className="space-y-3">
         {(studySet.items || []).map((item, index) => (
-          <article key={`${item.prompt}-${index}`} className="rounded-md border border-orange-200/10 bg-black/18 p-4">
+          <article key={`${item.prompt}-${index}`} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4">
             <div className="flex gap-3">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-orange-500/15 text-sm font-black text-amber-200">
                 {index + 1}
@@ -219,7 +219,7 @@ function StudySetPreview({ studySet, emptyMessage }) {
                 {Array.isArray(item.choices) && (
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {item.choices.map((choice) => (
-                      <p key={choice} className="rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
+                      <p key={choice} className="forge-row-hover rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
                     ))}
                   </div>
                 )}

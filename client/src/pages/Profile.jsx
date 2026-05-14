@@ -53,7 +53,7 @@ export default function Profile() {
       </div>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <form onSubmit={handleSubmit} className="forge-card-hot rounded-lg p-5">
+        <form onSubmit={handleSubmit} className="forge-card-hot forge-hover-lift rounded-lg p-5">
           <div className="flex items-center gap-3">
             <div className="grid h-12 w-12 place-items-center rounded-md bg-orange-500/15 text-amber-300">
               <User size={22} />
@@ -113,7 +113,7 @@ export default function Profile() {
           </button>
         </form>
 
-        <div className="forge-card rounded-lg p-5">
+        <div className="forge-card forge-hover-lift rounded-lg p-5">
           <h3 className="text-lg font-black text-orange-50">Appearance</h3>
           <p className="mt-1 text-sm text-slate-400">
             Switch between the full dark forge and a cleaner light workspace.
@@ -126,7 +126,7 @@ export default function Profile() {
               className={`rounded-lg border p-4 text-left transition ${
                 theme === 'dark'
                   ? 'border-amber-300/60 bg-orange-500/12 text-orange-50 shadow-[0_0_26px_rgba(249,115,22,0.12)]'
-                  : 'border-orange-200/10 bg-black/15 text-slate-300 hover:border-orange-200/30'
+                  : 'border-orange-200/10 bg-black/15 text-slate-300 hover:-translate-y-0.5 hover:border-orange-200/30 hover:bg-orange-500/8'
               }`}
             >
               <Moon className="mb-4 text-amber-300" size={22} />
@@ -140,7 +140,7 @@ export default function Profile() {
               className={`rounded-lg border p-4 text-left transition ${
                 theme === 'light'
                   ? 'border-amber-400 bg-amber-100/70 text-slate-950 shadow-[0_0_26px_rgba(248,177,45,0.18)]'
-                  : 'border-orange-200/10 bg-black/15 text-slate-300 hover:border-orange-200/30'
+                  : 'border-orange-200/10 bg-black/15 text-slate-300 hover:-translate-y-0.5 hover:border-orange-200/30 hover:bg-orange-500/8'
               }`}
             >
               <Sun className="mb-4 text-amber-300" size={22} />

@@ -29,7 +29,7 @@ const dependencies = [
 export default function About() {
   return (
     <div className="space-y-6">
-      <section className="forge-card-hot rounded-lg p-6">
+      <section className="forge-card-hot forge-hover-lift rounded-lg p-6">
         <BrandMark />
         <div className="forge-divider-glow my-6 h-px" />
         <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">About the project</p>
@@ -72,7 +72,7 @@ export default function About() {
         </Panel>
       </section>
 
-      <section className="forge-card rounded-lg p-5">
+      <section className="forge-card forge-hover-lift rounded-lg p-5">
         <h3 className="text-lg font-black text-orange-50">How it was made</h3>
         <p className="mt-3 text-sm leading-6 text-slate-400">
           FocusForge AI was built as a React frontend connected to a Flask REST API. The backend defines
@@ -87,7 +87,7 @@ export default function About() {
 
 function InfoCard({ icon: Icon, title, children }) {
   return (
-    <article className="forge-card rounded-lg p-5">
+    <article className="forge-card forge-hover-lift rounded-lg p-5">
       <div className="grid h-11 w-11 place-items-center rounded-md bg-orange-500/15 text-amber-300">
         <Icon size={21} />
       </div>
@@ -99,7 +99,7 @@ function InfoCard({ icon: Icon, title, children }) {
 
 function Panel({ title, children }) {
   return (
-    <div className="forge-card rounded-lg p-5">
+    <div className="forge-card forge-hover-lift rounded-lg p-5">
       <h3 className="mb-4 text-lg font-black text-orange-50">{title}</h3>
       {children}
     </div>
@@ -110,7 +110,7 @@ function TagGrid({ items }) {
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((item) => (
-        <span key={item} className="rounded-md border border-orange-200/10 bg-black/18 px-3 py-2 text-sm font-semibold text-slate-300">
+        <span key={item} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 px-3 py-2 text-sm font-semibold text-slate-300">
           {item}
         </span>
       ))}

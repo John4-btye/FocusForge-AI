@@ -166,6 +166,54 @@ textarea {
   background: linear-gradient(90deg, transparent, rgba(248, 177, 45, 0.9), transparent);
 }
 
+.forge-hover-lift {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.forge-hover-lift::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 18% 0%, rgba(248, 177, 45, 0.16), transparent 13rem);
+  transition: opacity 180ms ease;
+}
+
+.forge-hover-lift:hover {
+  border-color: rgba(248, 177, 45, 0.36);
+  box-shadow:
+    0 22px 62px rgba(0, 0, 0, 0.36),
+    0 0 34px rgba(249, 115, 22, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.forge-hover-lift:hover::before {
+  opacity: 1;
+}
+
+.forge-row-hover {
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.forge-row-hover:hover {
+  border-color: rgba(248, 177, 45, 0.34);
+  background: rgba(249, 115, 22, 0.075);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+  transform: translateX(2px);
+}
+
 [data-theme='light'] {
   color-scheme: light;
   --forge-bg: #fff8ed;
@@ -253,4 +301,11 @@ textarea {
 
 [data-theme='light'] header {
   background: rgba(255, 248, 237, 0.88);
+}
+
+[data-theme='light'] .forge-hover-lift:hover {
+  box-shadow:
+    0 22px 50px rgba(116, 64, 22, 0.14),
+    0 0 26px rgba(249, 115, 22, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }

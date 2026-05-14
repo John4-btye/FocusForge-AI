@@ -96,7 +96,7 @@ export default function AIChat() {
         ))}
       </section>
 
-      <Link to="/study-sets" className="forge-card flex items-center gap-3 rounded-lg p-4 text-orange-50 transition hover:border-orange-200/30 hover:bg-orange-400/5">
+      <Link to="/study-sets" className="forge-card forge-hover-lift flex items-center gap-3 rounded-lg p-4 text-orange-50">
         <BookMarked className="text-amber-300" size={20} />
         <span className="font-bold">Generate and save Quizlet-style study sets</span>
       </Link>
