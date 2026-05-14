@@ -6,6 +6,7 @@ import Modal from '../components/Modal'
 import { useToast } from '../toast/ToastContext'
 
 const initialGenerator = {
+  // Default generator settings for new AI-created collections.
   topic: '',
   set_type: 'flashcards',
   count: 8,
@@ -13,6 +14,7 @@ const initialGenerator = {
 }
 
 export default function StudySets() {
+  // Study Sets manages generation preview, saved collections, and selected collection view.
   const [courses, setCourses] = useState([])
   const [studySets, setStudySets] = useState([])
   const [selectedSet, setSelectedSet] = useState(null)
@@ -25,6 +27,7 @@ export default function StudySets() {
   const toast = useToast()
 
   async function loadStudySets() {
+    // Reload saved collection metadata after save or delete.
     const response = await api.get('/study-sets')
     setStudySets(response.data)
   }
@@ -35,6 +38,7 @@ export default function StudySets() {
   }, [])
 
   async function generateSet(event) {
+    // Generation creates a preview only; the user chooses whether to save it.
     event.preventDefault()
     setLoading(true)
     setError('')
@@ -58,6 +62,7 @@ export default function StudySets() {
   }
 
   async function saveGeneratedSet() {
+    // Saving persists the current preview as a user-owned StudySet.
     if (!generatedSet) return
 
     setSaving(true)
@@ -82,11 +87,13 @@ export default function StudySets() {
   }
 
   async function openStudySet(id) {
+    // Detail fetch includes study set items, unlike the lightweight list payload.
     const response = await api.get(`/study-sets/${id}`)
     setSelectedSet(response.data)
   }
 
   async function confirmDelete() {
+    // Deleting a saved set also clears the viewer if that set was selected.
     if (!deletingSet) return
     setSaving(true)
     try {
@@ -225,11 +232,13 @@ export default function StudySets() {
 }
 
 function StudySetPreview({ studySet, emptyMessage }) {
+  // Preview component renders both generated drafts and saved study set details.
   if (!studySet) {
     return <EmptyState title="Nothing selected" message={emptyMessage} />
   }
 
   const isQuiz = studySet.set_type === 'quiz'
+  // Icon and answer layout shift based on whether the set is flashcards or quiz items.
   const Icon = isQuiz ? ListChecks : NotebookTabs
 
   return (

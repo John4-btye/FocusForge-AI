@@ -15,6 +15,7 @@ task_bp = Blueprint("tasks", __name__)
 @task_bp.get("")
 @jwt_required()
 def get_tasks():
+    # Paginated task list: filter by owner, sort active/due tasks first, return metadata.
     user_id = current_user_id()
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
@@ -40,6 +41,7 @@ def get_tasks():
 @task_bp.post("")
 @jwt_required()
 def create_task():
+    # Tasks may be standalone or linked to one of the current user's courses.
     user_id = current_user_id()
     data = request.get_json() or {}
     title = data.get("title", "").strip()
@@ -69,6 +71,7 @@ def create_task():
 @task_bp.get("/<int:task_id>")
 @jwt_required()
 def get_task(task_id):
+    # Single-record ownership check is handled directly in the query.
     task = Task.query.filter_by(id=task_id, user_id=current_user_id()).first()
     if not task:
         return error_response("Task not found", 404)
@@ -78,6 +81,7 @@ def get_task(task_id):
 @task_bp.patch("/<int:task_id>")
 @jwt_required()
 def update_task(task_id):
+    # Patch route supports partial updates from edit modals and completion toggles.
     user_id = current_user_id()
     task = Task.query.filter_by(id=task_id, user_id=user_id).first()
     if not task:
@@ -85,6 +89,7 @@ def update_task(task_id):
 
     data = request.get_json() or {}
     if "course_id" in data:
+        # Revalidate course ownership before reassigning a task to a course.
         _, course_error = validate_course_access(data.get("course_id"), user_id)
         if course_error:
             return course_error
@@ -109,6 +114,7 @@ def update_task(task_id):
 @task_bp.delete("/<int:task_id>")
 @jwt_required()
 def delete_task(task_id):
+    # Delete only succeeds when the task belongs to the current user.
     task = Task.query.filter_by(id=task_id, user_id=current_user_id()).first()
     if not task:
         return error_response("Task not found", 404)

@@ -7,6 +7,7 @@ import { formatDate } from '../utils/formatDate'
 const initialForm = { title: '', description: '', due_date: '', priority: 'medium', course_id: '' }
 
 export default function Tasks() {
+  // Tasks page tracks pagination plus edit/delete modal state.
   const [tasks, setTasks] = useState([])
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
@@ -19,6 +20,7 @@ export default function Tasks() {
   const toast = useToast()
 
   async function loadTasks(nextPage = page) {
+    // Paginated fetch keeps the current page unless a caller requests a new page.
     const response = await api.get(`/tasks?page=${nextPage}&per_page=10`)
     setTasks(response.data.items)
     setPage(response.data.page)
@@ -35,6 +37,7 @@ export default function Tasks() {
   }, [])
 
   async function handleSubmit(event) {
+    // New tasks are sent to page 1 because sorting may place them near the top.
     event.preventDefault()
     try {
       await api.post('/tasks', { ...form, course_id: form.course_id || null })
@@ -47,6 +50,7 @@ export default function Tasks() {
   }
 
   async function toggleTask(task) {
+    // Checkbox uses the same patch route as the edit modal, but only flips completion.
     try {
       await api.patch(`/tasks/${task.id}`, { completed: !task.completed })
       loadTasks()
@@ -57,6 +61,7 @@ export default function Tasks() {
   }
 
   function openEditModal(task) {
+    // Modal receives a copy of task fields so canceling does not mutate the list.
     setEditingTask(task)
     setEditForm({
       title: task.title,
@@ -69,6 +74,7 @@ export default function Tasks() {
   }
 
   async function handleEditSubmit(event) {
+    // course_id is converted back to null when the user selects "No course".
     event.preventDefault()
     if (!editingTask) return
     setSaving(true)
@@ -85,6 +91,7 @@ export default function Tasks() {
   }
 
   async function confirmDelete() {
+    // Delete is confirmed through modal state before calling the API.
     if (!deletingTask) return
     setSaving(true)
     try {

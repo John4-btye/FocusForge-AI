@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext'
 import BrandMark from '../components/BrandMark'
 
 export default function Signup() {
+  // Signup creates the account and immediately starts an authenticated session.
   const { signup } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ username: '', email: '', password: '' })
@@ -12,6 +13,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(event) {
+    // Submit flow mirrors login but sends username/email/password.
     event.preventDefault()
     setError('')
     try {

@@ -2,6 +2,7 @@ import { Pause, Play, RotateCcw, TimerReset, X } from 'lucide-react'
 import { useTimer } from '../timer/TimerContext'
 
 export default function GlobalTimer() {
+  // Floating timer mirrors TimerContext state when the user opts into global visibility.
   const {
     formattedTime,
     isRunning,
@@ -16,6 +17,7 @@ export default function GlobalTimer() {
 
   if (!showGlobalTimer) return null
 
+  // The progress bar is derived from elapsed time, not stored separately.
   return (
     <div className="fixed bottom-5 right-5 z-40 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-orange-200/20 bg-[#0b0e14]/92 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.38),0_0_35px_rgba(249,115,22,0.12)] backdrop-blur-xl">
       <div className="flex items-start justify-between gap-3">

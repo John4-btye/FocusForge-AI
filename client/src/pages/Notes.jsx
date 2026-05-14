@@ -6,6 +6,7 @@ import { useToast } from '../toast/ToastContext'
 const initialForm = { title: '', content: '', course_id: '' }
 
 export default function Notes() {
+  // Notes page handles paginated notes and long-form edit modal state.
   const [notes, setNotes] = useState([])
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
@@ -18,6 +19,7 @@ export default function Notes() {
   const toast = useToast()
 
   async function loadNotes(nextPage = page) {
+    // Notes are paginated on the backend and sorted by updated_at.
     const response = await api.get(`/notes?page=${nextPage}&per_page=10`)
     setNotes(response.data.items)
     setPage(response.data.page)
@@ -34,6 +36,7 @@ export default function Notes() {
   }, [])
 
   async function handleSubmit(event) {
+    // Create flow posts note content, clears the form, and reloads page 1.
     event.preventDefault()
     try {
       await api.post('/notes', { ...form, course_id: form.course_id || null })
@@ -46,6 +49,7 @@ export default function Notes() {
   }
 
   function openEditModal(note) {
+    // Copy note data into modal state to support canceling edits cleanly.
     setEditingNote(note)
     setEditForm({
       title: note.title,
@@ -55,6 +59,7 @@ export default function Notes() {
   }
 
   async function handleEditSubmit(event) {
+    // Empty course selection is normalized to null for the backend.
     event.preventDefault()
     if (!editingNote) return
     setSaving(true)
@@ -71,6 +76,7 @@ export default function Notes() {
   }
 
   async function confirmDelete() {
+    // Delete confirmation prevents accidental note removal.
     if (!deletingNote) return
     setSaving(true)
     try {

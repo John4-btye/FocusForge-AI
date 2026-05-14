@@ -5,6 +5,7 @@ load_dotenv()
 
 
 class Config:
+    # Environment-backed app settings keep local secrets out of source control.
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL", "postgresql://localhost/focusforge_ai"
     )

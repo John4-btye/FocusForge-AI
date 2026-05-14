@@ -29,6 +29,7 @@ you can guide them through what to click or what to enter.
 @ai_bp.post("/chat")
 @jwt_required()
 def chat():
+    # Chat endpoint wraps Gemini with FocusForge-specific system instructions.
     data = request.get_json() or {}
     message = (data.get("message") or "").strip()
     history = data.get("history") or []
@@ -52,6 +53,7 @@ def chat():
         for item in history[-8:]
         if item.get("content")
     )
+    # Only recent history is included to keep prompts short and relevant.
     prompt = f"{SYSTEM_PROMPT}\n\nRecent conversation:\n{transcript}\n\nUser: {message}\nFocusForge AI:"
 
     try:
@@ -86,6 +88,7 @@ def chat():
 @ai_bp.post("/generate-study-set")
 @jwt_required()
 def generate_study_set():
+    # Structured generation endpoint returns JSON that can be saved as StudySet records.
     data = request.get_json() or {}
     topic = (data.get("topic") or "").strip()
     set_type = (data.get("set_type") or "").strip()
@@ -138,6 +141,7 @@ def generate_study_set():
 
 
 def build_study_set_prompt(topic, set_type, count):
+    # Prompt branch controls the expected item shape for flashcards vs quizzes.
     if set_type == "flashcards":
         item_instruction = """
 Each item must have:
@@ -180,6 +184,7 @@ Keep wording clear and useful for a student reviewing the topic.
 
 
 def parse_json_response(text):
+    # Gemini may wrap JSON in markdown, so this extracts the first JSON object safely.
     if not text:
         raise ValueError("Empty AI response")
 
@@ -195,6 +200,7 @@ def parse_json_response(text):
 
     payload = json.loads(cleaned[start : end + 1])
     items = payload.get("items") or []
+    # Normalize AI output before the frontend previews or saves it.
     payload["items"] = [
         {
             "prompt": (item.get("prompt") or "").strip(),

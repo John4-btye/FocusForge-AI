@@ -2,6 +2,7 @@ import { Bot, Code2, Database, Flame, Layers, ShieldCheck } from 'lucide-react'
 import BrandMark from '../components/BrandMark'
 
 const technologies = [
+  // Technologies are listed here so the About page doubles as project documentation.
   'React',
   'Vite',
   'Tailwind CSS',
@@ -13,6 +14,7 @@ const technologies = [
 ]
 
 const dependencies = [
+  // Dependency names match the README and package/requirements files.
   'axios',
   'react-router-dom',
   'lucide-react',
@@ -27,6 +29,7 @@ const dependencies = [
 ]
 
 export default function About() {
+  // About page explains project purpose, build stack, and capstone requirements.
   return (
     <div className="space-y-6">
       <section className="forge-card-hot forge-hover-lift rounded-lg p-6">
@@ -86,6 +89,7 @@ export default function About() {
 }
 
 function InfoCard({ icon: Icon, title, children }) {
+  // Reusable informational card with an icon heading.
   return (
     <article className="forge-card forge-hover-lift rounded-lg p-5">
       <div className="grid h-11 w-11 place-items-center rounded-md bg-orange-500/15 text-amber-300">
@@ -98,6 +102,7 @@ function InfoCard({ icon: Icon, title, children }) {
 }
 
 function Panel({ title, children }) {
+  // About page panel wrapper for grouped lists.
   return (
     <div className="forge-card forge-hover-lift rounded-lg p-5">
       <h3 className="mb-4 text-lg font-black text-orange-50">{title}</h3>
@@ -107,6 +112,7 @@ function Panel({ title, children }) {
 }
 
 function TagGrid({ items }) {
+  // Small tag layout for technologies and implementation highlights.
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((item) => (

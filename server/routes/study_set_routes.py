@@ -10,6 +10,7 @@ study_set_bp = Blueprint("study_sets", __name__)
 @study_set_bp.get("")
 @jwt_required()
 def get_study_sets():
+    # List view returns saved set metadata without all flashcard/question items.
     user_id = current_user_id()
     sets = (
         StudySet.query.filter_by(user_id=user_id)
@@ -22,6 +23,7 @@ def get_study_sets():
 @study_set_bp.post("")
 @jwt_required()
 def create_study_set():
+    # Save an AI-generated study set and its individual items in one transaction.
     user_id = current_user_id()
     data = request.get_json() or {}
     title = (data.get("title") or "").strip()
@@ -49,6 +51,7 @@ def create_study_set():
     db.session.add(study_set)
     db.session.flush()
 
+    # Flush gives study_set.id before inserting child items.
     for index, item in enumerate(items, start=1):
         prompt = (item.get("prompt") or "").strip()
         answer = (item.get("answer") or "").strip()
@@ -71,6 +74,7 @@ def create_study_set():
 @study_set_bp.get("/<int:set_id>")
 @jwt_required()
 def get_study_set(set_id):
+    # Detail view includes child items after ownership is confirmed.
     study_set = StudySet.query.filter_by(id=set_id, user_id=current_user_id()).first()
     if not study_set:
         return error_response("Study set not found", 404)
@@ -80,6 +84,7 @@ def get_study_set(set_id):
 @study_set_bp.delete("/<int:set_id>")
 @jwt_required()
 def delete_study_set(set_id):
+    # Deleting a set cascades to its saved flashcards/questions.
     study_set = StudySet.query.filter_by(id=set_id, user_id=current_user_id()).first()
     if not study_set:
         return error_response("Study set not found", 404)

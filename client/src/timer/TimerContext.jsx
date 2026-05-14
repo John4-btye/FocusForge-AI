@@ -20,6 +20,7 @@ export const timerSounds = [
 const TimerContext = createContext(null)
 
 export function TimerProvider({ children }) {
+  // Timer state is global so the floating timer can follow users across pages.
   const [timerMinutes, setTimerMinutes] = useState(30)
   const [remainingSeconds, setRemainingSeconds] = useState(30 * 60)
   const [isRunning, setIsRunning] = useState(false)
@@ -35,14 +36,17 @@ export function TimerProvider({ children }) {
   const selectedSound = timerSounds.find((sound) => sound.id === soundId) || timerSounds[0]
 
   useEffect(() => {
+    // Persist whether the mini timer should appear outside the Study tab.
     localStorage.setItem('focusforge_show_timer', String(showGlobalTimer))
   }, [showGlobalTimer])
 
   useEffect(() => {
+    // Persist the completion sound choice for future sessions.
     localStorage.setItem('focusforge_timer_sound', soundId)
   }, [soundId])
 
   useEffect(() => {
+    // Countdown interval only runs while active and cleans itself up on pause/unmount.
     if (!isRunning) return
 
     const interval = window.setInterval(() => {
@@ -62,6 +66,7 @@ export function TimerProvider({ children }) {
   }, [isRunning, selectedSound])
 
   function selectTimer(minutes) {
+    // Choosing a preset resets the active countdown to that duration.
     setTimerMinutes(minutes)
     setRemainingSeconds(minutes * 60)
     setIsRunning(false)
@@ -69,6 +74,7 @@ export function TimerProvider({ children }) {
   }
 
   function startTimer() {
+    // Restart from the selected duration if the previous countdown already finished.
     if (remainingSeconds <= 0) {
       setRemainingSeconds(totalSeconds)
     }
@@ -136,12 +142,14 @@ export function formatTime(totalSeconds) {
 }
 
 function requestNotificationPermission() {
+  // Browser notification support is optional; unsupported browsers simply skip it.
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission()
   }
 }
 
 function notifyTimerComplete(sound) {
+  // Completion uses both local audio and browser notifications when available.
   playCompletionTone(sound)
 
   if ('Notification' in window && Notification.permission === 'granted') {
@@ -152,6 +160,7 @@ function notifyTimerComplete(sound) {
 }
 
 function playCompletionTone(sound) {
+  // Web Audio generates simple local tones without needing audio files.
   const AudioContext = window.AudioContext || window.webkitAudioContext
   if (!AudioContext) return
 

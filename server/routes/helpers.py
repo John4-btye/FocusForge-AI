@@ -6,6 +6,7 @@ from models import Course
 
 
 def current_user_id():
+    # JWT identities are stored as strings, so routes normalize them to integers.
     return int(get_jwt_identity())
 
 
@@ -14,18 +15,21 @@ def error_response(message, status_code):
 
 
 def parse_date(value):
+    # Empty date inputs from forms should become null database values.
     if not value:
         return None
     return date.fromisoformat(value)
 
 
 def get_owned_course(course_id, user_id):
+    # Ownership helper prevents linking tasks/notes/sessions to another user's course.
     if not course_id:
         return None
     return Course.query.filter_by(id=course_id, user_id=user_id).first()
 
 
 def validate_course_access(course_id, user_id):
+    # Shared guard for routes that accept optional course_id values.
     if not course_id:
         return None, None
     course = get_owned_course(course_id, user_id)

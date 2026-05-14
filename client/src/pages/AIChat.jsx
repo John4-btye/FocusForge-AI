@@ -5,6 +5,7 @@ import api from '../api/axios'
 import { useToast } from '../toast/ToastContext'
 
 const quickPrompts = [
+  // Preset prompts speed up common student AI requests.
   {
     label: 'Flashcards',
     icon: NotebookTabs,
@@ -34,6 +35,7 @@ const welcomeMessage = {
 }
 
 export default function AIChat() {
+  // Chat state stores the visible conversation and temporary request/error state.
   const [messages, setMessages] = useState([welcomeMessage])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -41,11 +43,13 @@ export default function AIChat() {
   const toast = useToast()
 
   const chatHistory = useMemo(
+    // Exclude system-like messages before sending recent visible history to the backend.
     () => messages.filter((message) => message.role !== 'system'),
     [messages],
   )
 
   async function sendMessage(customPrompt) {
+    // Optimistic chat flow: show the user message before waiting for AI response.
     const message = (customPrompt ?? input).trim()
     if (!message || loading) return
 
@@ -73,6 +77,7 @@ export default function AIChat() {
   }
 
   function fillQuickPrompt(prompt) {
+    // Quick prompts populate the input without sending automatically.
     setInput(prompt)
   }
 

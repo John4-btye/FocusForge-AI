@@ -1,6 +1,7 @@
 import logo from '../assets/focusforge-logo.png'
 
 export default function BrandMark({ compact = false, className = '' }) {
+  // Shared brand block keeps logo/title/tagline consistent across auth and app shell.
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <img

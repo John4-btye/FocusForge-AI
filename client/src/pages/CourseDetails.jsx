@@ -4,6 +4,7 @@ import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
 
 export default function CourseDetails() {
+  // Course detail fetches one course plus its related tasks and notes.
   const { id } = useParams()
   const [course, setCourse] = useState(null)
 
@@ -33,6 +34,7 @@ export default function CourseDetails() {
 }
 
 function Panel({ title, children }) {
+  // Course detail panel groups related child records.
   return (
     <div className="forge-card forge-hover-lift rounded-lg p-5">
       <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>
@@ -42,6 +44,7 @@ function Panel({ title, children }) {
 }
 
 function Item({ title, text }) {
+  // Compact child-row preview for a task or note.
   return (
     <div className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-3">
       <p className="font-semibold text-orange-50">{title}</p>

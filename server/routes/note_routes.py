@@ -10,6 +10,7 @@ note_bp = Blueprint("notes", __name__)
 @note_bp.get("")
 @jwt_required()
 def get_notes():
+    # Paginated notes list: most recently updated notes appear first.
     user_id = current_user_id()
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
@@ -35,6 +36,7 @@ def get_notes():
 @note_bp.post("")
 @jwt_required()
 def create_note():
+    # Notes require title/content and can optionally be linked to a user-owned course.
     user_id = current_user_id()
     data = request.get_json() or {}
     title = data.get("title", "").strip()
@@ -57,6 +59,7 @@ def create_note():
 @note_bp.get("/<int:note_id>")
 @jwt_required()
 def get_note(note_id):
+    # Read only the current user's note; hidden records return 404.
     note = Note.query.filter_by(id=note_id, user_id=current_user_id()).first()
     if not note:
         return error_response("Note not found", 404)
@@ -66,6 +69,7 @@ def get_note(note_id):
 @note_bp.patch("/<int:note_id>")
 @jwt_required()
 def update_note(note_id):
+    # Patch route handles modal edits while preserving fields not included in the request.
     user_id = current_user_id()
     note = Note.query.filter_by(id=note_id, user_id=user_id).first()
     if not note:
@@ -73,6 +77,7 @@ def update_note(note_id):
 
     data = request.get_json() or {}
     if "course_id" in data:
+        # A note cannot be moved into a course owned by another user.
         _, course_error = validate_course_access(data.get("course_id"), user_id)
         if course_error:
             return course_error
@@ -93,6 +98,7 @@ def update_note(note_id):
 @note_bp.delete("/<int:note_id>")
 @jwt_required()
 def delete_note(note_id):
+    # Delete guard keeps users from deleting notes they do not own.
     note = Note.query.filter_by(id=note_id, user_id=current_user_id()).first()
     if not note:
         return error_response("Note not found", 404)

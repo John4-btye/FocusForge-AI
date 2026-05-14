@@ -9,6 +9,7 @@ import { formatDate } from '../utils/formatDate'
 const initialForm = { course_id: '', duration_minutes: '', session_date: '', notes: '' }
 
 export default function StudySessions() {
+  // Study page combines timer controls, manual session logging, and session history.
   const [sessions, setSessions] = useState([])
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
@@ -39,6 +40,7 @@ export default function StudySessions() {
   } = useTimer()
 
   async function loadSessions() {
+    // Refresh the session history after manual logs, timer logs, edits, or deletes.
     const response = await api.get('/study-sessions')
     setSessions(response.data)
   }
@@ -49,6 +51,7 @@ export default function StudySessions() {
   }, [])
 
   async function handleSubmit(event) {
+    // Manual study session form creates a session without using the countdown timer.
     event.preventDefault()
     try {
       await api.post('/study-sessions', { ...form, course_id: form.course_id || null })
@@ -61,6 +64,7 @@ export default function StudySessions() {
   }
 
   function applyCustomTimer() {
+    // Custom timers allow durations beyond the preset study options.
     const minutes = Number(customMinutes)
     if (!minutes || minutes < 1) {
       toast.error('Enter a custom timer length greater than 0 minutes.')
@@ -71,6 +75,7 @@ export default function StudySessions() {
   }
 
   async function logCompletedTimer() {
+    // Completed timer logs reuse the study-session API so dashboard stats update.
     try {
       await api.post('/study-sessions', {
         course_id: timerCourseId || null,
@@ -87,6 +92,7 @@ export default function StudySessions() {
   }
 
   function openEditModal(session) {
+    // Session edit modal copies existing data so canceling leaves history untouched.
     setEditingSession(session)
     setEditForm({
       course_id: session.course_id || '',
@@ -97,6 +103,7 @@ export default function StudySessions() {
   }
 
   async function handleEditSubmit(event) {
+    // Modal can update duration, date, notes, and optional course association.
     event.preventDefault()
     if (!editingSession) return
     setSaving(true)
@@ -113,6 +120,7 @@ export default function StudySessions() {
   }
 
   async function confirmDelete() {
+    // Destructive session removal requires the confirmation modal.
     if (!deletingSession) return
     setSaving(true)
     try {

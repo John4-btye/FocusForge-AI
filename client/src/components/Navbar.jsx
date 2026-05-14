@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext'
 import BrandMark from './BrandMark'
 
 export default function Navbar() {
+  // Top bar shows brand identity plus the current user and logout action.
   const { user, logout } = useAuth()
 
   return (

@@ -12,11 +12,13 @@ dashboard_bp = Blueprint("dashboard", __name__)
 @dashboard_bp.get("")
 @jwt_required()
 def get_dashboard():
+    # Dashboard aggregates several user-owned resources into one frontend payload.
     user_id = current_user_id()
     today = date.today()
     week_start = today - timedelta(days=today.weekday())
 
     tasks = Task.query.filter_by(user_id=user_id).all()
+    # Completion percentage is calculated in Python from the user's task list.
     completed_count = len([task for task in tasks if task.completed])
     completed_percentage = round((completed_count / len(tasks)) * 100) if tasks else 0
 
@@ -33,6 +35,7 @@ def get_dashboard():
         .limit(5)
         .all()
     )
+    # Study minutes are summed in SQL so the dashboard does not load every session.
     study_minutes = (
         db.session.query(func.coalesce(func.sum(StudySession.duration_minutes), 0))
         .filter(StudySession.user_id == user_id)

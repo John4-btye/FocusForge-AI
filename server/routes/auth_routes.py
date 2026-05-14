@@ -8,6 +8,7 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.post("/signup")
 def signup():
+    # Signup flow: validate input, enforce uniqueness, hash password, then issue JWT.
     data = request.get_json() or {}
     username = data.get("username", "").strip()
     email = data.get("email", "").strip().lower()
@@ -30,6 +31,7 @@ def signup():
 
 @auth_bp.post("/login")
 def login():
+    # Login flow: locate by email and verify bcrypt hash before returning a token.
     data = request.get_json() or {}
     email = data.get("email", "").strip().lower()
     password = data.get("password", "")
@@ -45,6 +47,7 @@ def login():
 @auth_bp.get("/me")
 @jwt_required()
 def me():
+    # Current-user endpoint lets the React app restore auth state after refresh.
     user = User.query.get(get_jwt_identity())
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -54,6 +57,7 @@ def me():
 @auth_bp.patch("/me")
 @jwt_required()
 def update_me():
+    # Profile update keeps usernames/emails unique across all users except self.
     user = User.query.get(get_jwt_identity())
     if not user:
         return jsonify({"error": "User not found"}), 404

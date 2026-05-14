@@ -4,9 +4,11 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 const ThemeContext = createContext(null)
 
 export function ThemeProvider({ children }) {
+  // Theme is persisted locally so the user's light/dark choice survives refreshes.
   const [theme, setTheme] = useState(() => localStorage.getItem('focusforge_theme') || 'dark')
 
   useEffect(() => {
+    // The data attribute lets global CSS theme both custom classes and Tailwind utilities.
     document.documentElement.dataset.theme = theme
     localStorage.setItem('focusforge_theme', theme)
   }, [theme])

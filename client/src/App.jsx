@@ -21,17 +21,20 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
+        {/* Public auth routes stay outside the protected app shell. */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
           path="/*"
           element={
             <ProtectedRoute>
+              {/* Authenticated shell: shared nav/sidebar wraps all dashboard pages. */}
               <div className="forge-bg min-h-screen">
                 <Navbar />
                 <div className="mx-auto flex max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
                   <Sidebar />
                   <main className="min-w-0 flex-1">
+                    {/* Nested app routes render inside the shared shell. */}
                     <Routes>
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />

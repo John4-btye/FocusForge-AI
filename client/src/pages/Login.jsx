@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext'
 import BrandMark from '../components/BrandMark'
 
 export default function Login() {
+  // Login form stores the JWT through AuthContext, then redirects into the app.
   const { login } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
@@ -12,6 +13,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(event) {
+    // Submit flow: prevent page reload, call API, then navigate on success.
     event.preventDefault()
     setError('')
     try {

@@ -9,6 +9,7 @@ import { ToastProvider } from './toast/ToastContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    {/* Global providers wrap the app with theme, timer, toast, and routing state. */}
     <ThemeProvider>
       <TimerProvider>
         <ToastProvider>

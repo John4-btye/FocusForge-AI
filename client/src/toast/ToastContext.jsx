@@ -20,6 +20,7 @@ const toastStyles = {
 }
 
 export function ToastProvider({ children }) {
+  // Toasts live globally so any page can report success/error without prop drilling.
   const [toasts, setToasts] = useState([])
 
   const dismiss = useCallback((id) => {
@@ -27,6 +28,7 @@ export function ToastProvider({ children }) {
   }, [])
 
   const showToast = useCallback((type, message) => {
+    // Each toast removes itself after a short delay, but can also be dismissed manually.
     const id = crypto.randomUUID()
     setToasts((current) => [...current, { id, type, message }])
     window.setTimeout(() => dismiss(id), 3600)

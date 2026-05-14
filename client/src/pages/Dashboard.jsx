@@ -4,6 +4,7 @@ import EmptyState from '../components/EmptyState'
 import { formatDate } from '../utils/formatDate'
 
 export default function Dashboard() {
+  // Dashboard loads one aggregated backend payload instead of calling every resource route.
   const [data, setData] = useState(null)
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function Dashboard() {
 }
 
 function Stat({ label, value }) {
+  // Compact metric card used for top-level dashboard totals.
   return (
     <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
       <p className="text-sm font-semibold text-slate-400">{label}</p>
@@ -69,6 +71,7 @@ function Stat({ label, value }) {
 }
 
 function Panel({ title, children }) {
+  // Shared dashboard panel wrapper for task/note preview sections.
   return (
     <div className="forge-card forge-hover-lift rounded-lg p-5">
       <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>

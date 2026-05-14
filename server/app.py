@@ -19,8 +19,10 @@ jwt = JWTManager()
 
 
 def create_app():
+    # App factory: builds the Flask app, loads config, and wires every extension/route.
     app = Flask(__name__)
     app.config.from_object(Config)
+    # Development CORS whitelist: Vite may shift ports when one is already in use.
     vite_dev_origins = [
         origin
         for port in range(5173, 5180)
@@ -30,6 +32,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    # API-only CORS configuration keeps browser calls from React allowed while staying scoped.
     CORS(
         app,
         resources={
@@ -41,6 +44,7 @@ def create_app():
         },
     )
 
+    # Blueprint registration: each feature owns its own REST route group.
     app.register_blueprint(auth_bp, url_prefix="/api")
     app.register_blueprint(ai_bp, url_prefix="/api/ai")
     app.register_blueprint(course_bp, url_prefix="/api/courses")
@@ -52,6 +56,7 @@ def create_app():
 
     @app.get("/api/health")
     def health_check():
+        # Lightweight endpoint for confirming the backend is running.
         return jsonify({"status": "ok", "message": "FocusForge API is running"})
 
     return app

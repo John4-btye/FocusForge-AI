@@ -16,6 +16,7 @@ study_session_bp = Blueprint("study_sessions", __name__)
 @study_session_bp.get("")
 @jwt_required()
 def get_study_sessions():
+    # Sessions are returned newest-first for the Study tab history list.
     user_id = current_user_id()
     sessions = (
         StudySession.query.filter_by(user_id=user_id)
@@ -28,6 +29,7 @@ def get_study_sessions():
 @study_session_bp.post("")
 @jwt_required()
 def create_study_session():
+    # Session creation powers both manual logs and completed timer logs.
     user_id = current_user_id()
     data = request.get_json() or {}
     course_id = data.get("course_id")
@@ -55,6 +57,7 @@ def create_study_session():
 @study_session_bp.patch("/<int:session_id>")
 @jwt_required()
 def update_study_session(session_id):
+    # Modal edits can update duration, date, notes, and optional course link.
     user_id = current_user_id()
     session = StudySession.query.filter_by(id=session_id, user_id=user_id).first()
     if not session:
@@ -82,6 +85,7 @@ def update_study_session(session_id):
 @study_session_bp.delete("/<int:session_id>")
 @jwt_required()
 def delete_study_session(session_id):
+    # Ownership is enforced in the delete query itself.
     session = StudySession.query.filter_by(
         id=session_id, user_id=current_user_id()
     ).first()

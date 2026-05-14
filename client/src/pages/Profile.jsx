@@ -6,6 +6,7 @@ import { useTheme } from '../theme/ThemeContext'
 import { useToast } from '../toast/ToastContext'
 
 export default function Profile() {
+  // Profile page edits account details and controls the persisted app theme.
   const { user, updateUser } = useAuth()
   const { theme, setTheme } = useTheme()
   const [form, setForm] = useState(() => ({
@@ -19,6 +20,7 @@ export default function Profile() {
   const toast = useToast()
 
   async function handleSubmit(event) {
+    // Password is optional; leaving it blank keeps the existing password hash.
     event.preventDefault()
     setStatus('')
     setError('')

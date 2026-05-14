@@ -5,11 +5,13 @@ import api from '../api/axios'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
+  // Auth state is centralized so protected routes and the navbar see the same user.
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadUser() {
+      // On refresh, try to rebuild the logged-in user from the stored JWT.
       const token = localStorage.getItem('focusforge_token')
       if (!token) {
         setLoading(false)
@@ -30,6 +32,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function login(credentials) {
+    // Store token first, then expose user state to the rest of the React app.
     const response = await api.post('/login', credentials)
     localStorage.setItem('focusforge_token', response.data.token)
     setUser(response.data.user)
@@ -37,6 +40,7 @@ export function AuthProvider({ children }) {
   }
 
   async function signup(values) {
+    // Signup returns the same auth shape as login for a seamless first session.
     const response = await api.post('/signup', values)
     localStorage.setItem('focusforge_token', response.data.token)
     setUser(response.data.user)
@@ -44,6 +48,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    // JWT logout is client-side: removing the token blocks future protected calls.
     localStorage.removeItem('focusforge_token')
     setUser(null)
   }

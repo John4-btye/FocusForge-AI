@@ -10,6 +10,7 @@ course_bp = Blueprint("courses", __name__)
 @course_bp.get("")
 @jwt_required()
 def get_courses():
+    # Ownership filter: users only receive courses they created.
     user_id = current_user_id()
     courses = Course.query.filter_by(user_id=user_id).order_by(Course.created_at.desc())
     return jsonify([course.to_dict() for course in courses])
@@ -18,6 +19,7 @@ def get_courses():
 @course_bp.post("")
 @jwt_required()
 def create_course():
+    # Create course inside the current user's private workspace.
     user_id = current_user_id()
     data = request.get_json() or {}
     name = data.get("name", "").strip()
@@ -39,6 +41,7 @@ def create_course():
 @course_bp.get("/<int:course_id>")
 @jwt_required()
 def get_course(course_id):
+    # Detail view includes related task/note summaries after confirming ownership.
     course = Course.query.filter_by(id=course_id, user_id=current_user_id()).first()
     if not course:
         return error_response("Course not found", 404)
@@ -51,6 +54,7 @@ def get_course(course_id):
 @course_bp.patch("/<int:course_id>")
 @jwt_required()
 def update_course(course_id):
+    # Update guard: query by id and user_id so cross-user edits return not found.
     course = Course.query.filter_by(id=course_id, user_id=current_user_id()).first()
     if not course:
         return error_response("Course not found", 404)
@@ -72,6 +76,7 @@ def update_course(course_id):
 @course_bp.delete("/<int:course_id>")
 @jwt_required()
 def delete_course(course_id):
+    # Delete cascades related tasks, notes, and sessions through model relationships.
     course = Course.query.filter_by(id=course_id, user_id=current_user_id()).first()
     if not course:
         return error_response("Course not found", 404)

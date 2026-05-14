@@ -13,6 +13,7 @@ export default function Modal({
   danger = false,
 }) {
   useEffect(() => {
+    // Escape-key support keeps modal behavior familiar and keyboard-friendly.
     if (!isOpen) return undefined
 
     function handleKeyDown(event) {
@@ -27,6 +28,7 @@ export default function Modal({
 
   if (!isOpen) return null
 
+  // Use a form wrapper only when the caller provides submit behavior.
   const Body = onSubmit ? 'form' : 'div'
 
   return (
@@ -44,12 +46,10 @@ export default function Modal({
           </button>
         </div>
 
-        <Body
-          onSubmit={onSubmit}
-          className="space-y-4 px-5 py-5"
-        >
+        <Body onSubmit={onSubmit} className="space-y-4 px-5 py-5">
           {children}
 
+          {/* Shared modal footer keeps cancel/save/delete actions consistent. */}
           {(onSubmit || onClose) && (
             <div className="flex flex-wrap justify-end gap-3 pt-2">
               <button type="button" onClick={onClose} className="forge-button-subtle px-4 py-2 font-bold">

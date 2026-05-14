@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Theme tokens: central color variables for the forge visual system. */
 :root {
   color-scheme: dark;
   --forge-bg: #090b10;
@@ -18,6 +19,7 @@
 }
 
 body {
+  /* Global app background layers create the dark charcoal/ember atmosphere. */
   margin: 0;
   background:
     radial-gradient(circle at 10% 0%, rgba(249, 115, 22, 0.22), transparent 30rem),
@@ -53,6 +55,7 @@ textarea {
 }
 
 .forge-card {
+  /* Standard steel panel used across dashboards, forms, and content cards. */
   border: 1px solid var(--forge-border-cool);
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
@@ -63,6 +66,7 @@ textarea {
 }
 
 .forge-card-hot {
+  /* Hot card variant adds a stronger ember glow for primary sections. */
   border: 1px solid var(--forge-border);
   background:
     radial-gradient(circle at 18% 0%, rgba(249, 115, 22, 0.16), transparent 12rem),
@@ -75,6 +79,7 @@ textarea {
 }
 
 .forge-input {
+  /* Shared input styling keeps forms consistent across all CRUD pages. */
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid rgba(148, 163, 184, 0.22);
@@ -98,6 +103,7 @@ textarea {
 }
 
 .forge-button {
+  /* Primary action button with molten forge gradient. */
   border-radius: 0.5rem;
   background: linear-gradient(135deg, #f8b12d 0%, #f97316 55%, #b94308 100%);
   color: #160c05;
@@ -167,6 +173,7 @@ textarea {
 }
 
 .forge-hover-lift {
+  /* Card hover helper adds subtle elevation without changing layout size. */
   isolation: isolate;
   position: relative;
   overflow: hidden;
@@ -207,6 +214,7 @@ textarea {
 }
 
 .forge-row-hover {
+  /* Row hover helper is used for list items and selectable collection entries. */
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -222,6 +230,7 @@ textarea {
 }
 
 [data-theme='light'] {
+  /* Light theme overrides reuse the same component classes with warmer paper tones. */
   color-scheme: light;
   --forge-bg: #fff8ed;
   --forge-bg-soft: #f8ead8;

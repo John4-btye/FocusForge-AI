@@ -3,11 +3,13 @@ from models import Course, Note, StudySession, Task, User, db
 
 
 def seed():
+    # Development seed script: clears demo data and recreates a full sample workspace.
     with app.app_context():
         db.drop_all()
         db.create_all()
 
         user = User(username="demo", email="demo@example.com")
+        # Demo password is intentionally simple for local presentations.
         user.set_password("password123")
         db.session.add(user)
         db.session.flush()
@@ -18,6 +20,7 @@ def seed():
         db.session.add(course)
         db.session.flush()
 
+        # Seed related records so dashboard/course pages have useful demo content.
         db.session.add_all(
             [
                 Task(

@@ -2,6 +2,7 @@ import { BookMarked, BookOpen, Bot, ClipboardList, Info, LayoutDashboard, Notebo
 import { NavLink } from 'react-router-dom'
 
 const links = [
+  // Sidebar route map keeps navigation labels/icons in one place.
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/courses', label: 'Courses', icon: BookOpen },
   { to: '/tasks', label: 'Tasks', icon: ClipboardList },
@@ -22,6 +23,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             className={({ isActive }) =>
+              // Active links get the ember indicator; inactive links slide slightly on hover.
               `flex items-center gap-3 rounded-md border px-3 py-2 text-sm font-semibold transition ${
                 isActive
                   ? 'border-orange-200/20 bg-orange-500/15 text-orange-100 shadow-[inset_3px_0_0_rgba(248,177,45,0.9),0_0_24px_rgba(249,115,22,0.08)]'

@@ -8,6 +8,7 @@ import { useToast } from '../toast/ToastContext'
 const initialForm = { name: '', instructor: '', color: '#f97316' }
 
 export default function Courses() {
+  // Courses page manages create/edit/delete state plus modal confirmation state.
   const [courses, setCourses] = useState([])
   const [form, setForm] = useState(initialForm)
   const [editingCourse, setEditingCourse] = useState(null)
@@ -17,6 +18,7 @@ export default function Courses() {
   const toast = useToast()
 
   async function loadCourses() {
+    // Refresh course cards after create, edit, or delete.
     const response = await api.get('/courses')
     setCourses(response.data)
   }
@@ -26,6 +28,7 @@ export default function Courses() {
   }, [])
 
   async function handleSubmit(event) {
+    // Create flow posts the form, resets it, and refreshes the list.
     event.preventDefault()
     try {
       await api.post('/courses', form)
@@ -38,6 +41,7 @@ export default function Courses() {
   }
 
   function openEditModal(course) {
+    // Copy the selected course into local modal state so edits can be canceled safely.
     setEditingCourse(course)
     setEditForm({
       name: course.name,
@@ -47,6 +51,7 @@ export default function Courses() {
   }
 
   async function handleEditSubmit(event) {
+    // Save only happens when the modal form is submitted.
     event.preventDefault()
     if (!editingCourse) return
     setSaving(true)
@@ -63,6 +68,7 @@ export default function Courses() {
   }
 
   async function confirmDelete() {
+    // Destructive action is separated from the initial Delete button click.
     if (!deletingCourse) return
     setSaving(true)
     try {
