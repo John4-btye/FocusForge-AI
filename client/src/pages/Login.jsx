@@ -1,3 +1,4 @@
+import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
@@ -8,6 +9,7 @@ export default function Login() {
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -40,13 +42,23 @@ export default function Login() {
         </label>
         <label className="mt-4 block text-sm font-semibold text-orange-100/90">
           Password
-          <input
-            type="password"
-            value={form.password}
-            onChange={(event) => setForm({ ...form, password: event.target.value })}
-            className="forge-input mt-2 px-3 py-2"
-            required
-          />
+          <span className="relative mt-2 block">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={form.password}
+              onChange={(event) => setForm({ ...form, password: event.target.value })}
+              className="forge-input px-3 py-2 pr-11"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-slate-400 hover:bg-white/5 hover:text-amber-200"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </span>
         </label>
         <button className="forge-button mt-6 w-full px-4 py-2.5">
           Login

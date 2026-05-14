@@ -35,7 +35,7 @@ def chat():
         return jsonify({"error": "Message is required"}), 400
 
     api_key = current_app.config.get("GEMINI_API_KEY")
-    if not api_key:
+    if not api_key or api_key.startswith("replace-this"):
         return (
             jsonify(
                 {
@@ -59,6 +59,23 @@ def chat():
             contents=prompt,
         )
     except Exception as exc:
-        return jsonify({"error": f"AI request failed: {str(exc)}"}), 502
+        error_text = str(exc)
+        if "API_KEY_INVALID" in error_text or "API key not valid" in error_text:
+            return (
+                jsonify(
+                    {
+                        "error": "Gemini rejected the API key. Create a valid Gemini API key in Google AI Studio, update GEMINI_API_KEY in server/.env, and restart Flask."
+                    }
+                ),
+                401,
+            )
+        return (
+            jsonify(
+                {
+                    "error": "AI request failed. Check your Gemini API key, model name, and backend terminal logs."
+                }
+            ),
+            502,
+        )
 
     return jsonify({"reply": response.text or "I could not generate a response."})

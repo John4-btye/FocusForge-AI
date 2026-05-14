@@ -3,12 +3,15 @@ import { AuthProvider } from './auth/AuthContext'
 import ProtectedRoute from './auth/ProtectedRoute'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import GlobalTimer from './components/GlobalTimer'
+import About from './pages/About'
 import Courses from './pages/Courses'
 import CourseDetails from './pages/CourseDetails'
 import Dashboard from './pages/Dashboard'
 import AIChat from './pages/AIChat'
 import Login from './pages/Login'
 import Notes from './pages/Notes'
+import Profile from './pages/Profile'
 import Signup from './pages/Signup'
 import StudySessions from './pages/StudySessions'
 import Tasks from './pages/Tasks'
@@ -37,9 +40,12 @@ function App() {
                       <Route path="/notes" element={<Notes />} />
                       <Route path="/study-sessions" element={<StudySessions />} />
                       <Route path="/ai-chat" element={<AIChat />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/about" element={<About />} />
                     </Routes>
                   </main>
                 </div>
+                <GlobalTimer />
               </div>
             </ProtectedRoute>
           }

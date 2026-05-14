@@ -49,3 +49,33 @@ def me():
     if not user:
         return jsonify({"error": "User not found"}), 404
     return jsonify(user.to_dict())
+
+
+@auth_bp.patch("/me")
+@jwt_required()
+def update_me():
+    user = User.query.get(get_jwt_identity())
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json() or {}
+    username = data.get("username", "").strip()
+    email = data.get("email", "").strip().lower()
+    password = data.get("password", "")
+
+    if not username or not email:
+        return jsonify({"error": "Username and email are required"}), 400
+
+    existing_user = User.query.filter(
+        ((User.username == username) | (User.email == email)) & (User.id != user.id)
+    ).first()
+    if existing_user:
+        return jsonify({"error": "Username or email is already in use"}), 409
+
+    user.username = username
+    user.email = email
+    if password:
+        user.set_password(password)
+
+    db.session.commit()
+    return jsonify(user.to_dict())
