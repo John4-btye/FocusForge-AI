@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Bot, HelpCircle, ListChecks, NotebookTabs, Send, Sparkles } from 'lucide-react'
+import { Bot, BookMarked, HelpCircle, ListChecks, NotebookTabs, Send, Sparkles } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import api from '../api/axios'
 
 const quickPrompts = [
@@ -94,6 +95,11 @@ export default function AIChat() {
           </button>
         ))}
       </section>
+
+      <Link to="/study-sets" className="forge-card flex items-center gap-3 rounded-lg p-4 text-orange-50 transition hover:border-orange-200/30 hover:bg-orange-400/5">
+        <BookMarked className="text-amber-300" size={20} />
+        <span className="font-bold">Generate and save Quizlet-style study sets</span>
+      </Link>
 
       <section className="forge-card-hot flex min-h-[34rem] flex-col rounded-lg">
         <div className="flex items-center gap-3 border-b border-orange-200/10 px-5 py-4">

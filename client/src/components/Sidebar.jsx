@@ -1,4 +1,4 @@
-import { BookOpen, Bot, ClipboardList, Info, LayoutDashboard, NotebookPen, Timer, User } from 'lucide-react'
+import { BookMarked, BookOpen, Bot, ClipboardList, Info, LayoutDashboard, NotebookPen, Timer, User } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 const links = [
@@ -6,6 +6,7 @@ const links = [
   { to: '/courses', label: 'Courses', icon: BookOpen },
   { to: '/tasks', label: 'Tasks', icon: ClipboardList },
   { to: '/notes', label: 'Notes', icon: NotebookPen },
+  { to: '/study-sets', label: 'Study Sets', icon: BookMarked },
   { to: '/study-sessions', label: 'Study', icon: Timer },
   { to: '/ai-chat', label: 'AI Forge', icon: Bot },
   { to: '/profile', label: 'Profile', icon: User },

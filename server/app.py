@@ -11,6 +11,7 @@ from routes.course_routes import course_bp
 from routes.dashboard_routes import dashboard_bp
 from routes.note_routes import note_bp
 from routes.study_session_routes import study_session_bp
+from routes.study_set_routes import study_set_bp
 from routes.task_routes import task_bp
 
 migrate = Migrate()
@@ -46,6 +47,7 @@ def create_app():
     app.register_blueprint(task_bp, url_prefix="/api/tasks")
     app.register_blueprint(note_bp, url_prefix="/api/notes")
     app.register_blueprint(study_session_bp, url_prefix="/api/study-sessions")
+    app.register_blueprint(study_set_bp, url_prefix="/api/study-sets")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
 
     @app.get("/api/health")

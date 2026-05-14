@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from google import genai
@@ -79,3 +81,127 @@ def chat():
         )
 
     return jsonify({"reply": response.text or "I could not generate a response."})
+
+
+@ai_bp.post("/generate-study-set")
+@jwt_required()
+def generate_study_set():
+    data = request.get_json() or {}
+    topic = (data.get("topic") or "").strip()
+    set_type = (data.get("set_type") or "").strip()
+    count = data.get("count") or 8
+
+    if not topic:
+        return jsonify({"error": "Topic is required"}), 400
+    if set_type not in ["flashcards", "quiz"]:
+        return jsonify({"error": "Set type must be flashcards or quiz"}), 400
+
+    try:
+        count = max(3, min(int(count), 20))
+    except ValueError:
+        count = 8
+
+    api_key = current_app.config.get("GEMINI_API_KEY")
+    if not api_key or api_key.startswith("replace-this"):
+        return (
+            jsonify(
+                {
+                    "error": "Gemini API key is not configured. Add GEMINI_API_KEY to server/.env and restart Flask."
+                }
+            ),
+            503,
+        )
+
+    prompt = build_study_set_prompt(topic, set_type, count)
+
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model=current_app.config.get("GEMINI_MODEL"),
+            contents=prompt,
+        )
+        generated = parse_json_response(response.text)
+    except Exception as exc:
+        error_text = str(exc)
+        if "API_KEY_INVALID" in error_text or "API key not valid" in error_text:
+            return (
+                jsonify(
+                    {
+                        "error": "Gemini rejected the API key. Create a valid Gemini API key in Google AI Studio, update GEMINI_API_KEY in server/.env, and restart Flask."
+                    }
+                ),
+                401,
+            )
+        return jsonify({"error": "AI generation failed. Try a clearer topic."}), 502
+
+    return jsonify(generated)
+
+
+def build_study_set_prompt(topic, set_type, count):
+    if set_type == "flashcards":
+        item_instruction = """
+Each item must have:
+- prompt: the front of the flashcard
+- answer: the back of the flashcard
+- choices: null
+"""
+    else:
+        item_instruction = """
+Each item must have:
+- prompt: a quiz question
+- answer: the correct answer
+- choices: an array of 4 answer choices including the correct answer
+"""
+
+    return f"""
+Create a student study set about: {topic}
+Set type: {set_type}
+Number of items: {count}
+
+Return only valid JSON. Do not include markdown fences.
+
+JSON shape:
+{{
+  "title": "short study set title",
+  "topic": "{topic}",
+  "set_type": "{set_type}",
+  "items": [
+    {{
+      "prompt": "...",
+      "answer": "...",
+      "choices": null
+    }}
+  ]
+}}
+
+{item_instruction}
+Keep wording clear and useful for a student reviewing the topic.
+"""
+
+
+def parse_json_response(text):
+    if not text:
+        raise ValueError("Empty AI response")
+
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.strip("`")
+        cleaned = cleaned.replace("json\n", "", 1).replace("JSON\n", "", 1)
+
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start == -1 or end == -1:
+        raise ValueError("AI response did not include JSON")
+
+    payload = json.loads(cleaned[start : end + 1])
+    items = payload.get("items") or []
+    payload["items"] = [
+        {
+            "prompt": (item.get("prompt") or "").strip(),
+            "answer": (item.get("answer") or "").strip(),
+            "choices": item.get("choices"),
+        }
+        for item in items
+        if item.get("prompt") and item.get("answer")
+    ]
+    return payload

@@ -33,6 +33,7 @@ class User(db.Model, SerializerMixin):
     study_sessions = db.relationship(
         "StudySession", backref="user", cascade="all, delete-orphan"
     )
+    study_sets = db.relationship("StudySet", backref="user", cascade="all, delete-orphan")
 
     def set_password(self, password):
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -113,3 +114,35 @@ class StudySession(db.Model, SerializerMixin):
     session_date = db.Column(db.Date, default=date.today, nullable=False)
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+
+class StudySet(db.Model, SerializerMixin):
+    __tablename__ = "study_sets"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
+    title = db.Column(db.String(160), nullable=False)
+    topic = db.Column(db.String(220), nullable=False)
+    set_type = db.Column(db.String(20), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    items = db.relationship("StudySetItem", backref="study_set", cascade="all, delete-orphan")
+
+    def to_dict(self, include_items=False):
+        data = super().to_dict()
+        data["item_count"] = len(self.items)
+        if include_items:
+            data["items"] = [item.to_dict() for item in self.items]
+        return data
+
+
+class StudySetItem(db.Model, SerializerMixin):
+    __tablename__ = "study_set_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    study_set_id = db.Column(db.Integer, db.ForeignKey("study_sets.id"), nullable=False)
+    prompt = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Text, nullable=False)
+    choices = db.Column(db.JSON)
+    position = db.Column(db.Integer, nullable=False)

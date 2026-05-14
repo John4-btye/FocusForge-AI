@@ -13,6 +13,7 @@ import Login from './pages/Login'
 import Notes from './pages/Notes'
 import Profile from './pages/Profile'
 import Signup from './pages/Signup'
+import StudySets from './pages/StudySets'
 import StudySessions from './pages/StudySessions'
 import Tasks from './pages/Tasks'
 
@@ -38,6 +39,7 @@ function App() {
                       <Route path="/courses/:id" element={<CourseDetails />} />
                       <Route path="/tasks" element={<Tasks />} />
                       <Route path="/notes" element={<Notes />} />
+                      <Route path="/study-sets" element={<StudySets />} />
                       <Route path="/study-sessions" element={<StudySessions />} />
                       <Route path="/ai-chat" element={<AIChat />} />
                       <Route path="/profile" element={<Profile />} />
