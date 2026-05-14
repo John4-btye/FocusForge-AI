@@ -88,7 +88,7 @@ export default function AIChat() {
             key={label}
             type="button"
             onClick={() => fillQuickPrompt(prompt)}
-            className="forge-card flex items-center gap-3 rounded-lg p-4 text-left text-orange-50 transition hover:border-orange-200/30 hover:bg-orange-400/5"
+            className="forge-card forge-hover-lift flex items-center gap-3 rounded-lg p-4 text-left text-orange-50 transition hover:border-orange-200/30 hover:bg-orange-400/5"
           >
             <Icon className="text-amber-300" size={20} />
             <span className="font-bold">{label}</span>
@@ -101,7 +101,7 @@ export default function AIChat() {
         <span className="font-bold">Generate and save Quizlet-style study sets</span>
       </Link>
 
-      <section className="forge-card-hot flex min-h-[34rem] flex-col rounded-lg">
+      <section className="forge-card-hot forge-hover-lift flex min-h-[34rem] flex-col rounded-lg">
         <div className="flex items-center gap-3 border-b border-orange-200/10 px-5 py-4">
           <div className="grid h-10 w-10 place-items-center rounded-md bg-orange-500/15 text-amber-300 shadow-[0_0_24px_rgba(249,115,22,0.18)]">
             <Bot size={20} />

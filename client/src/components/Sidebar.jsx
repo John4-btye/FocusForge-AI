@@ -22,10 +22,10 @@ export default function Sidebar() {
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition ${
+              `flex items-center gap-3 rounded-md border px-3 py-2 text-sm font-semibold transition ${
                 isActive
-                  ? 'bg-orange-500/15 text-orange-100 shadow-[inset_3px_0_0_rgba(248,177,45,0.9),0_0_24px_rgba(249,115,22,0.08)]'
-                  : 'text-slate-400 hover:bg-white/[0.04] hover:text-orange-100'
+                  ? 'border-orange-200/20 bg-orange-500/15 text-orange-100 shadow-[inset_3px_0_0_rgba(248,177,45,0.9),0_0_24px_rgba(249,115,22,0.08)]'
+                  : 'border-transparent text-slate-400 hover:translate-x-1 hover:border-orange-200/20 hover:bg-white/[0.04] hover:text-orange-100'
               }`
             }
           >

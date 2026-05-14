@@ -53,7 +53,7 @@ export default function Notes() {
         <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Knowledge anvil</p>
         <h2 className="forge-page-title mt-1">Notes</h2>
       </div>
-      <form onSubmit={handleSubmit} className="forge-card space-y-3 rounded-lg p-5">
+      <form onSubmit={handleSubmit} className="forge-card forge-hover-lift space-y-3 rounded-lg p-5">
         <div className="grid gap-3 md:grid-cols-2">
           <input className="forge-input px-3 py-2" placeholder="Note title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
           <select className="forge-input px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
@@ -66,7 +66,7 @@ export default function Notes() {
       </form>
       <div className="grid gap-4 md:grid-cols-2">
         {notes.map((note) => (
-          <article key={note.id} className="forge-card rounded-lg p-5">
+          <article key={note.id} className="forge-card forge-hover-lift rounded-lg p-5">
             <div className="flex items-start justify-between gap-4">
               <h3 className="font-bold text-orange-50">{note.title}</h3>
               <div className="flex gap-2">

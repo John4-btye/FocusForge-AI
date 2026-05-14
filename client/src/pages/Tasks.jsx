@@ -58,7 +58,7 @@ export default function Tasks() {
         <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Assignment forge</p>
         <h2 className="forge-page-title mt-1">Tasks</h2>
       </div>
-      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 lg:grid-cols-5">
+      <form onSubmit={handleSubmit} className="forge-card forge-hover-lift grid gap-3 rounded-lg p-5 lg:grid-cols-5">
         <input className="forge-input px-3 py-2" placeholder="Task title" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} required />
         <input className="forge-input px-3 py-2" placeholder="Description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} />
         <input className="forge-input px-3 py-2" type="date" value={form.due_date} onChange={(event) => setForm({ ...form, due_date: event.target.value })} />
@@ -70,7 +70,7 @@ export default function Tasks() {
       </form>
       <div className="space-y-3">
         {tasks.map((task) => (
-          <article key={task.id} className="forge-card flex items-center justify-between gap-4 rounded-lg p-4">
+          <article key={task.id} className="forge-card forge-row-hover flex items-center justify-between gap-4 rounded-lg p-4">
             <label className="flex min-w-0 items-start gap-3">
               <input className="mt-1 accent-orange-500" type="checkbox" checked={task.completed} onChange={() => toggleTask(task)} />
               <span>

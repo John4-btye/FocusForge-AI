@@ -89,7 +89,7 @@ export default function StudySessions() {
         <p className="mt-1 text-sm text-slate-400">Set a timer, focus fully, and log the session when the forge cools.</p>
       </div>
 
-      <section className="forge-card-hot rounded-lg p-5">
+      <section className="forge-card-hot forge-hover-lift rounded-lg p-5">
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1fr]">
           <div className="flex flex-col items-center justify-center rounded-lg border border-orange-200/10 bg-black/18 p-6 text-center">
             <div className="grid h-16 w-16 place-items-center rounded-md bg-orange-500/15 text-amber-300">
@@ -121,7 +121,7 @@ export default function StudySessions() {
                   key={option.minutes}
                   type="button"
                   onClick={() => selectTimer(option.minutes)}
-                  className={`rounded-md border px-3 py-2 text-sm font-bold transition ${
+                  className={`rounded-md border px-3 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${
                     timerMinutes === option.minutes
                       ? 'border-amber-300/70 bg-orange-500/15 text-orange-50'
                       : 'border-orange-200/10 bg-black/15 text-slate-300 hover:border-orange-200/30'
@@ -165,7 +165,7 @@ export default function StudySessions() {
               </button>
             </div>
 
-            <label className="flex items-center justify-between gap-4 rounded-md border border-orange-200/10 bg-black/15 px-3 py-2 text-sm font-semibold text-slate-300">
+            <label className="forge-row-hover flex items-center justify-between gap-4 rounded-md border border-orange-200/10 bg-black/15 px-3 py-2 text-sm font-semibold text-slate-300">
               <span>Show timer on every screen</span>
               <input
                 type="checkbox"
@@ -199,7 +199,7 @@ export default function StudySessions() {
         </div>
       </section>
 
-      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 lg:grid-cols-5">
+      <form onSubmit={handleSubmit} className="forge-card forge-hover-lift grid gap-3 rounded-lg p-5 lg:grid-cols-5">
         <select className="forge-input px-3 py-2" value={form.course_id} onChange={(event) => setForm({ ...form, course_id: event.target.value })}>
           <option value="">No course</option>
           {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
@@ -211,7 +211,7 @@ export default function StudySessions() {
       </form>
       <div className="space-y-3">
         {sessions.map((session) => (
-          <article key={session.id} className="forge-card flex items-center justify-between gap-4 rounded-lg p-4">
+          <article key={session.id} className="forge-card forge-row-hover flex items-center justify-between gap-4 rounded-lg p-4">
             <div>
               <p className="font-bold text-orange-50">{session.duration_minutes} minutes</p>
               <p className="text-sm text-slate-400">{formatDate(session.session_date)} · {session.notes || 'Focused study session'}</p>

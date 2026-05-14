@@ -44,7 +44,7 @@ export default function Courses() {
         <p className="text-xs font-bold uppercase tracking-[0.28em] text-amber-300/75">Academic materials</p>
         <h2 className="forge-page-title mt-1">Courses</h2>
       </div>
-      <form onSubmit={handleSubmit} className="forge-card grid gap-3 rounded-lg p-5 md:grid-cols-[1fr_1fr_auto_auto]">
+      <form onSubmit={handleSubmit} className="forge-card forge-hover-lift grid gap-3 rounded-lg p-5 md:grid-cols-[1fr_1fr_auto_auto]">
         <input className="forge-input px-3 py-2" placeholder="Course name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
         <input className="forge-input px-3 py-2" placeholder="Instructor" value={form.instructor} onChange={(event) => setForm({ ...form, instructor: event.target.value })} />
         <input className="h-10 rounded-md border border-orange-200/20 bg-black/30 px-2" type="color" value={form.color} onChange={(event) => setForm({ ...form, color: event.target.value })} />
@@ -53,7 +53,7 @@ export default function Courses() {
       {courses.length ? (
         <div className="grid gap-4 md:grid-cols-2">
           {courses.map((course) => (
-            <article key={course.id} className="forge-card-hot rounded-lg p-5">
+            <article key={course.id} className="forge-card-hot forge-hover-lift rounded-lg p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="mb-3 h-2 w-16 rounded-full shadow-[0_0_18px_rgba(249,115,22,0.32)]" style={{ background: course.color }} />

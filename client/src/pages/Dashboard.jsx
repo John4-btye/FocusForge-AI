@@ -30,7 +30,7 @@ export default function Dashboard() {
           {data.upcoming_tasks.length ? (
             <div className="space-y-3">
               {data.upcoming_tasks.map((task) => (
-                <div key={task.id} className="rounded-md border border-orange-200/10 bg-black/18 p-3">
+                <div key={task.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-3">
                   <p className="font-semibold text-orange-50">{task.title}</p>
                   <p className="text-sm text-slate-400">{formatDate(task.due_date)}</p>
                 </div>
@@ -44,7 +44,7 @@ export default function Dashboard() {
           {data.recent_notes.length ? (
             <div className="space-y-3">
               {data.recent_notes.map((note) => (
-                <div key={note.id} className="rounded-md border border-orange-200/10 bg-black/18 p-3">
+                <div key={note.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-3">
                   <p className="font-semibold text-orange-50">{note.title}</p>
                   <p className="line-clamp-2 text-sm text-slate-400">{note.content}</p>
                 </div>
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
 function Stat({ label, value }) {
   return (
-    <div className="forge-card-hot rounded-lg p-5">
+    <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
       <p className="text-sm font-semibold text-slate-400">{label}</p>
       <p className="mt-2 text-3xl font-black text-amber-200">{value}</p>
     </div>
@@ -70,7 +70,7 @@ function Stat({ label, value }) {
 
 function Panel({ title, children }) {
   return (
-    <div className="forge-card rounded-lg p-5">
+    <div className="forge-card forge-hover-lift rounded-lg p-5">
       <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>
       {children}
     </div>
