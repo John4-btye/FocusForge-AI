@@ -1,0 +1,8 @@
+server/.env
+client/.env
+server/venv/
+__pycache__/
+server/instance/
+client/node_modules/
+client/dist/
+.DS_Store
