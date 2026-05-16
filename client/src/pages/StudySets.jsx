@@ -1,4 +1,4 @@
-import { Brain, CheckCircle2, ChevronLeft, ChevronRight, ListChecks, NotebookTabs, Save, Trash2 } from 'lucide-react'
+import { Brain, CheckCircle2, ChevronLeft, ChevronRight, ListChecks, NotebookTabs, RotateCcw, Save, Trash2, XCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
@@ -207,7 +207,7 @@ export default function StudySets() {
 
         <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
           <h3 className="mb-4 text-lg font-black text-orange-50">Collection viewer</h3>
-          <StudySetPreview studySet={selectedSet} emptyMessage="Select a saved collection to review it." carousel />
+          <StudySetPreview key={selectedSet?.id || 'empty-collection'} studySet={selectedSet} emptyMessage="Select a saved collection to review it." carousel />
         </div>
       </section>
 
@@ -236,6 +236,8 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   const carouselRef = useRef(null)
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0 })
   const [activeIndex, setActiveIndex] = useState(0)
+  const [flippedCards, setFlippedCards] = useState({})
+  const [selectedAnswers, setSelectedAnswers] = useState({})
 
   if (!studySet) {
     return <EmptyState title="Nothing selected" message={emptyMessage} />
@@ -245,6 +247,10 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   // Icon and answer layout shift based on whether the set is flashcards or quiz items.
   const Icon = isQuiz ? ListChecks : NotebookTabs
   const items = studySet.items || []
+  const answeredCount = Object.keys(selectedAnswers).length
+  const correctCount = items.reduce((total, item, index) => (
+    normalizeAnswer(selectedAnswers[index]) === normalizeAnswer(item.answer) ? total + 1 : total
+  ), 0)
 
   function updateActiveSlide() {
     if (!carouselRef.current) return
@@ -283,6 +289,23 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
     updateActiveSlide()
   }
 
+  function toggleFlashcard(index) {
+    setFlippedCards((current) => ({ ...current, [index]: !current[index] }))
+  }
+
+  function chooseAnswer(index, choice) {
+    setSelectedAnswers((current) => {
+      if (current[index]) return current
+      return { ...current, [index]: choice }
+    })
+  }
+
+  function resetStudyMode() {
+    setFlippedCards({})
+    setSelectedAnswers({})
+    scrollToSlide(0)
+  }
+
   return (
     <div className="mt-4 space-y-4">
       <div className="flex items-center gap-3">
@@ -298,10 +321,23 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
       {carousel ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3 rounded-md border border-orange-200/10 bg-black/18 px-3 py-2">
-            <p className="text-sm font-semibold text-slate-300">
-              Card {items.length ? activeIndex + 1 : 0} of {items.length}
-            </p>
+            <div>
+              <p className="text-sm font-semibold text-slate-300">
+                Card {items.length ? activeIndex + 1 : 0} of {items.length}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                {isQuiz ? `${correctCount}/${items.length} correct · ${answeredCount}/${items.length} answered` : 'Click the card to flip between front and back'}
+              </p>
+            </div>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={resetStudyMode}
+                className="forge-button-subtle inline-grid h-9 w-9 place-items-center p-0"
+                aria-label="Reset study mode"
+              >
+                <RotateCcw size={17} />
+              </button>
               <button
                 type="button"
                 onClick={() => scrollToSlide(activeIndex - 1)}
@@ -333,7 +369,17 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
             className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth rounded-lg pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {items.map((item, index) => (
-              <StudySetItemCard key={`${item.prompt}-${index}`} item={item} index={index} carousel />
+              <StudySetItemCard
+                key={`${item.prompt}-${index}`}
+                item={item}
+                index={index}
+                carousel
+                isQuiz={isQuiz}
+                selectedAnswer={selectedAnswers[index]}
+                flipped={Boolean(flippedCards[index])}
+                onChooseAnswer={(choice) => chooseAnswer(index, choice)}
+                onToggleFlip={() => toggleFlashcard(index)}
+              />
             ))}
           </div>
 
@@ -362,8 +408,44 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   )
 }
 
-function StudySetItemCard({ item, index, carousel = false }) {
+function StudySetItemCard({
+  item,
+  index,
+  carousel = false,
+  isQuiz = false,
+  selectedAnswer = '',
+  flipped = false,
+  onChooseAnswer,
+  onToggleFlip,
+}) {
   // One reusable item card supports stacked previews and the saved collection carousel.
+  if (carousel && !isQuiz) {
+    return (
+      <article className="flex min-h-80 flex-[0_0_100%] snap-center select-none rounded-md border border-orange-200/10 bg-black/18 p-4 md:p-6">
+        <button
+          type="button"
+          onClick={onToggleFlip}
+          className={`forge-row-hover flex w-full flex-col justify-between rounded-md border p-6 text-left transition ${
+            flipped ? 'border-amber-300/45 bg-orange-500/10 shadow-[0_0_28px_rgba(251,191,36,0.12)]' : 'border-orange-200/10 bg-black/20'
+          }`}
+        >
+          <span className="text-xs font-black uppercase tracking-[0.22em] text-amber-300/80">
+            {flipped ? 'Back' : 'Front'} · Card {index + 1}
+          </span>
+          <span className="my-8 block text-xl font-black leading-8 text-orange-50">
+            {flipped ? item.answer : item.prompt}
+          </span>
+          <span className="text-sm font-semibold text-slate-400">
+            {flipped ? 'Click to return to the prompt' : 'Click to reveal the answer'}
+          </span>
+        </button>
+      </article>
+    )
+  }
+
+  const answerSelected = Boolean(selectedAnswer)
+  const selectedIsCorrect = normalizeAnswer(selectedAnswer) === normalizeAnswer(item.answer)
+
   return (
     <article className={`forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4 ${carousel ? 'min-h-80 flex-[0_0_100%] snap-center select-none md:p-6' : ''}`}>
       <div className="flex gap-3">
@@ -374,17 +456,51 @@ function StudySetItemCard({ item, index, carousel = false }) {
           <p className="font-bold text-orange-50">{item.prompt}</p>
           {Array.isArray(item.choices) && (
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {item.choices.map((choice) => (
-                <p key={choice} className="forge-row-hover rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
-              ))}
+              {item.choices.map((choice) => {
+                const isSelected = selectedAnswer === choice
+                const isCorrect = normalizeAnswer(choice) === normalizeAnswer(item.answer)
+                const resultClass = answerSelected && isCorrect
+                  ? 'border-emerald-300/60 bg-emerald-500/15 text-emerald-100'
+                  : answerSelected && isSelected
+                    ? 'border-red-300/60 bg-red-500/15 text-red-100'
+                    : 'border-orange-200/10 text-slate-300 hover:border-amber-300/45 hover:bg-orange-400/10'
+
+                return carousel ? (
+                  <button
+                    key={choice}
+                    type="button"
+                    onClick={() => onChooseAnswer(choice)}
+                    disabled={answerSelected}
+                    className={`rounded-md border px-3 py-3 text-left text-sm font-semibold transition ${resultClass} disabled:cursor-default`}
+                  >
+                    {choice}
+                  </button>
+                ) : (
+                  <p key={choice} className="forge-row-hover rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
+                )
+              })}
             </div>
           )}
-          <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-300">
-            <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
-            {item.answer}
-          </p>
+          {(!carousel || !Array.isArray(item.choices) || answerSelected) && (
+            <p className={`mt-3 flex items-start gap-2 text-sm leading-6 ${carousel && answerSelected && !selectedIsCorrect ? 'text-red-100' : 'text-slate-300'}`}>
+              {carousel && answerSelected && !selectedIsCorrect ? (
+                <XCircle className="mt-0.5 shrink-0 text-red-300" size={16} />
+              ) : (
+                <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
+              )}
+              {carousel && answerSelected ? (
+                selectedIsCorrect ? `Correct: ${item.answer}` : `Correct answer: ${item.answer}`
+              ) : (
+                item.answer
+              )}
+            </p>
+          )}
         </div>
       </div>
     </article>
   )
+}
+
+function normalizeAnswer(value) {
+  return String(value || '').trim().toLowerCase()
 }
