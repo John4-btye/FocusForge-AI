@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
-from google import genai
+import requests
 
 ai_bp = Blueprint("ai", __name__)
 
@@ -29,7 +29,7 @@ you can guide them through what to click or what to enter.
 @ai_bp.post("/chat")
 @jwt_required()
 def chat():
-    # Chat endpoint wraps Gemini with FocusForge-specific system instructions.
+    # Chat endpoint wraps the Groq-hosted model with FocusForge-specific system instructions.
     data = request.get_json() or {}
     message = (data.get("message") or "").strip()
     history = data.get("history") or []
@@ -37,12 +37,12 @@ def chat():
     if not message:
         return jsonify({"error": "Message is required"}), 400
 
-    api_key = current_app.config.get("GEMINI_API_KEY")
+    api_key = current_app.config.get("GROQ_API_KEY")
     if not api_key or api_key.startswith("replace-this"):
         return (
             jsonify(
                 {
-                    "error": "Gemini API key is not configured. Add GEMINI_API_KEY to server/.env and restart Flask."
+                    "error": "Groq API key is not configured. Add GROQ_API_KEY to server/.env and restart Flask."
                 }
             ),
             503,
@@ -57,18 +57,14 @@ def chat():
     prompt = f"{SYSTEM_PROMPT}\n\nRecent conversation:\n{transcript}\n\nUser: {message}\nFocusForge AI:"
 
     try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=current_app.config.get("GEMINI_MODEL"),
-            contents=prompt,
-        )
+        reply = generate_groq_text(api_key, prompt)
     except Exception as exc:
         error_text = str(exc)
-        if "API_KEY_INVALID" in error_text or "API key not valid" in error_text:
+        if "invalid_api_key" in error_text or "Invalid API Key" in error_text:
             return (
                 jsonify(
                     {
-                        "error": "Gemini rejected the API key. Create a valid Gemini API key in Google AI Studio, update GEMINI_API_KEY in server/.env, and restart Flask."
+                        "error": "Groq rejected the API key. Add a valid GROQ_API_KEY to server/.env and restart Flask."
                     }
                 ),
                 401,
@@ -76,13 +72,13 @@ def chat():
         return (
             jsonify(
                 {
-                    "error": "AI request failed. Check your Gemini API key, model name, and backend terminal logs."
+                    "error": "AI request failed. Check your Groq API key, model name, and backend terminal logs."
                 }
             ),
             502,
         )
 
-    return jsonify({"reply": response.text or "I could not generate a response."})
+    return jsonify({"reply": reply or "I could not generate a response."})
 
 
 @ai_bp.post("/generate-study-set")
@@ -104,12 +100,12 @@ def generate_study_set():
     except ValueError:
         count = 8
 
-    api_key = current_app.config.get("GEMINI_API_KEY")
+    api_key = current_app.config.get("GROQ_API_KEY")
     if not api_key or api_key.startswith("replace-this"):
         return (
             jsonify(
                 {
-                    "error": "Gemini API key is not configured. Add GEMINI_API_KEY to server/.env and restart Flask."
+                    "error": "Groq API key is not configured. Add GROQ_API_KEY to server/.env and restart Flask."
                 }
             ),
             503,
@@ -118,19 +114,15 @@ def generate_study_set():
     prompt = build_study_set_prompt(topic, set_type, count)
 
     try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=current_app.config.get("GEMINI_MODEL"),
-            contents=prompt,
-        )
-        generated = parse_json_response(response.text)
+        response_text = generate_groq_text(api_key, prompt)
+        generated = parse_json_response(response_text)
     except Exception as exc:
         error_text = str(exc)
-        if "API_KEY_INVALID" in error_text or "API key not valid" in error_text:
+        if "invalid_api_key" in error_text or "Invalid API Key" in error_text:
             return (
                 jsonify(
                     {
-                        "error": "Gemini rejected the API key. Create a valid Gemini API key in Google AI Studio, update GEMINI_API_KEY in server/.env, and restart Flask."
+                        "error": "Groq rejected the API key. Add a valid GROQ_API_KEY to server/.env and restart Flask."
                     }
                 ),
                 401,
@@ -138,6 +130,34 @@ def generate_study_set():
         return jsonify({"error": "AI generation failed. Try a clearer topic."}), 502
 
     return jsonify(generated)
+
+
+def generate_groq_text(api_key, prompt):
+    # Groq uses an OpenAI-compatible chat endpoint, so the response shape stays familiar.
+    response = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": current_app.config.get("GROQ_MODEL", "openai/gpt-oss-120b"),
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.4,
+        },
+        timeout=45,
+    )
+
+    if response.status_code >= 400:
+        raise RuntimeError(response.text)
+
+    payload = response.json()
+    return (
+        payload.get("choices", [{}])[0]
+        .get("message", {})
+        .get("content", "")
+        .strip()
+    )
 
 
 def build_study_set_prompt(topic, set_type, count):
@@ -184,7 +204,7 @@ Keep wording clear and useful for a student reviewing the topic.
 
 
 def parse_json_response(text):
-    # Gemini may wrap JSON in markdown, so this extracts the first JSON object safely.
+    # AI models may wrap JSON in markdown, so this extracts the first JSON object safely.
     if not text:
         raise ValueError("Empty AI response")
 

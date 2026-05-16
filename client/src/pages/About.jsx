@@ -10,7 +10,7 @@ const technologies = [
   'PostgreSQL',
   'SQLAlchemy',
   'JWT Authentication',
-  'Gemini API',
+  'Groq API',
 ]
 
 const dependencies = [
@@ -25,7 +25,7 @@ const dependencies = [
   'psycopg2-binary',
   'python-dotenv',
   'bcrypt',
-  'google-genai',
+  'requests',
 ]
 
 export default function About() {

@@ -1,5 +1,5 @@
-import { Brain, CheckCircle2, ListChecks, NotebookTabs, Save, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Brain, CheckCircle2, ChevronLeft, ChevronRight, ListChecks, NotebookTabs, Save, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
 import Modal from '../components/Modal'
@@ -207,7 +207,7 @@ export default function StudySets() {
 
         <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
           <h3 className="mb-4 text-lg font-black text-orange-50">Collection viewer</h3>
-          <StudySetPreview studySet={selectedSet} emptyMessage="Select a saved collection to review it." />
+          <StudySetPreview studySet={selectedSet} emptyMessage="Select a saved collection to review it." carousel />
         </div>
       </section>
 
@@ -231,8 +231,12 @@ export default function StudySets() {
   )
 }
 
-function StudySetPreview({ studySet, emptyMessage }) {
+function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   // Preview component renders both generated drafts and saved study set details.
+  const carouselRef = useRef(null)
+  const dragState = useRef({ active: false, startX: 0, scrollLeft: 0 })
+  const [activeIndex, setActiveIndex] = useState(0)
+
   if (!studySet) {
     return <EmptyState title="Nothing selected" message={emptyMessage} />
   }
@@ -240,6 +244,44 @@ function StudySetPreview({ studySet, emptyMessage }) {
   const isQuiz = studySet.set_type === 'quiz'
   // Icon and answer layout shift based on whether the set is flashcards or quiz items.
   const Icon = isQuiz ? ListChecks : NotebookTabs
+  const items = studySet.items || []
+
+  function updateActiveSlide() {
+    if (!carouselRef.current) return
+    const { scrollLeft, clientWidth } = carouselRef.current
+    setActiveIndex(Math.round(scrollLeft / clientWidth))
+  }
+
+  function scrollToSlide(index) {
+    if (!carouselRef.current) return
+    const nextIndex = Math.max(0, Math.min(index, items.length - 1))
+    carouselRef.current.scrollTo({
+      left: nextIndex * carouselRef.current.clientWidth,
+      behavior: 'smooth',
+    })
+    setActiveIndex(nextIndex)
+  }
+
+  function startDrag(event) {
+    if (!carousel || !carouselRef.current) return
+    dragState.current = {
+      active: true,
+      startX: event.pageX,
+      scrollLeft: carouselRef.current.scrollLeft,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function dragSlides(event) {
+    if (!dragState.current.active || !carouselRef.current) return
+    event.preventDefault()
+    carouselRef.current.scrollLeft = dragState.current.scrollLeft - (event.pageX - dragState.current.startX)
+  }
+
+  function stopDrag() {
+    dragState.current.active = false
+    updateActiveSlide()
+  }
 
   return (
     <div className="mt-4 space-y-4">
@@ -253,31 +295,96 @@ function StudySetPreview({ studySet, emptyMessage }) {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {(studySet.items || []).map((item, index) => (
-          <article key={`${item.prompt}-${index}`} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4">
-            <div className="flex gap-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-orange-500/15 text-sm font-black text-amber-200">
-                {index + 1}
-              </span>
-              <div className="min-w-0">
-                <p className="font-bold text-orange-50">{item.prompt}</p>
-                {Array.isArray(item.choices) && (
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    {item.choices.map((choice) => (
-                      <p key={choice} className="forge-row-hover rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
-                    ))}
-                  </div>
-                )}
-                <p className="mt-3 flex items-start gap-2 text-sm text-slate-300">
-                  <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
-                  {item.answer}
-                </p>
-              </div>
+      {carousel ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-3 rounded-md border border-orange-200/10 bg-black/18 px-3 py-2">
+            <p className="text-sm font-semibold text-slate-300">
+              Card {items.length ? activeIndex + 1 : 0} of {items.length}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => scrollToSlide(activeIndex - 1)}
+                disabled={activeIndex === 0}
+                className="forge-button inline-grid h-9 w-9 place-items-center p-0 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Previous collection item"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSlide(activeIndex + 1)}
+                disabled={activeIndex >= items.length - 1}
+                className="forge-button inline-grid h-9 w-9 place-items-center p-0 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Next collection item"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
-          </article>
-        ))}
-      </div>
+          </div>
+
+          <div
+            ref={carouselRef}
+            onScroll={updateActiveSlide}
+            onPointerDown={startDrag}
+            onPointerMove={dragSlides}
+            onPointerUp={stopDrag}
+            onPointerCancel={stopDrag}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth rounded-lg pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {items.map((item, index) => (
+              <StudySetItemCard key={`${item.prompt}-${index}`} item={item} index={index} carousel />
+            ))}
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2">
+            {items.map((item, index) => (
+              <button
+                key={`${item.prompt}-dot-${index}`}
+                type="button"
+                onClick={() => scrollToSlide(index)}
+                className={`h-2.5 rounded-full transition-all ${
+                  activeIndex === index ? 'w-8 bg-amber-300 shadow-[0_0_16px_rgba(251,191,36,0.45)]' : 'w-2.5 bg-slate-600 hover:bg-orange-300/70'
+                }`}
+                aria-label={`View collection item ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {items.map((item, index) => (
+            <StudySetItemCard key={`${item.prompt}-${index}`} item={item} index={index} />
+          ))}
+        </div>
+      )}
     </div>
+  )
+}
+
+function StudySetItemCard({ item, index, carousel = false }) {
+  // One reusable item card supports stacked previews and the saved collection carousel.
+  return (
+    <article className={`forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4 ${carousel ? 'min-h-80 flex-[0_0_100%] snap-center select-none md:p-6' : ''}`}>
+      <div className="flex gap-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-orange-500/15 text-sm font-black text-amber-200">
+          {index + 1}
+        </span>
+        <div className="min-w-0">
+          <p className="font-bold text-orange-50">{item.prompt}</p>
+          {Array.isArray(item.choices) && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {item.choices.map((choice) => (
+                <p key={choice} className="forge-row-hover rounded-md border border-orange-200/10 px-3 py-2 text-sm text-slate-300">{choice}</p>
+              ))}
+            </div>
+          )}
+          <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-300">
+            <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
+            {item.answer}
+          </p>
+        </div>
+      </div>
+    </article>
   )
 }

@@ -11,5 +11,5 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "replace-this-with-a-secret-key")
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+    GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")

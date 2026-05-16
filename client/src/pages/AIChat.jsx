@@ -117,7 +117,7 @@ export default function AIChat() {
           </div>
           <div>
             <h3 className="font-black text-orange-50">FocusForge Assistant</h3>
-            <p className="text-xs text-slate-400">Powered by Gemini 2.5 Flash</p>
+            <p className="text-xs text-slate-400">Powered by Groq + GPT-OSS 120B</p>
           </div>
         </div>
 

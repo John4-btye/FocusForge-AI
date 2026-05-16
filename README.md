@@ -13,7 +13,7 @@ FocusForge AI is a full-stack student productivity app built with React, Flask, 
 - Flask-Migrate
 - Flask-JWT-Extended
 - PostgreSQL
-- Google Gemini API
+- Groq API
 
 ## Setup And Run Instructions
 
@@ -36,8 +36,8 @@ Create `server/.env`:
 FLASK_ENV=development
 DATABASE_URL=postgresql://localhost/focusforge_ai
 JWT_SECRET_KEY=replace-this-with-a-secret-key
-GEMINI_API_KEY=replace-this-with-your-google-ai-studio-key
-GEMINI_MODEL=gemini-2.5-flash
+GROQ_API_KEY=replace-this-with-your-groq-api-key
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 Start the Flask API on port `5002`:
@@ -81,6 +81,6 @@ Open the local Vite URL shown in the terminal, usually `http://localhost:5173`.
 
 ## AI Setup
 
-FocusForge AI uses Gemini 2.5 Flash for the chatbot. Create a free Gemini API key in Google AI Studio, add it to `server/.env` as `GEMINI_API_KEY`, then restart the Flask backend.
+FocusForge AI uses Groq's free API plan with `openai/gpt-oss-120b` for the chatbot. Create a Groq API key, add it to `server/.env` as `GROQ_API_KEY`, then restart the Flask backend. Free usage is rate-limited, so `llama-3.3-70b-versatile` can be used as `GROQ_MODEL` if the default model hits limits.
 
 The AI route is protected, so users must be logged in before using the chatbot.
