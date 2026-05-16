@@ -254,15 +254,22 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
 
   function updateActiveSlide() {
     if (!carouselRef.current) return
-    const { scrollLeft, clientWidth } = carouselRef.current
-    setActiveIndex(Math.round(scrollLeft / clientWidth))
+    const { scrollLeft } = carouselRef.current
+    const slides = Array.from(carouselRef.current.children)
+    const closestIndex = slides.reduce((closest, slide, index) => {
+      const currentDistance = Math.abs(slide.offsetLeft - scrollLeft)
+      const closestDistance = Math.abs(slides[closest].offsetLeft - scrollLeft)
+      return currentDistance < closestDistance ? index : closest
+    }, 0)
+    setActiveIndex(closestIndex)
   }
 
   function scrollToSlide(index) {
     if (!carouselRef.current) return
     const nextIndex = Math.max(0, Math.min(index, items.length - 1))
+    const nextSlide = carouselRef.current.children[nextIndex]
     carouselRef.current.scrollTo({
-      left: nextIndex * carouselRef.current.clientWidth,
+      left: nextSlide?.offsetLeft || 0,
       behavior: 'smooth',
     })
     setActiveIndex(nextIndex)
@@ -270,6 +277,7 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
 
   function startDrag(event) {
     if (!carousel || !carouselRef.current) return
+    if (event.target.closest('[data-no-carousel-drag="true"]')) return
     dragState.current = {
       active: true,
       startX: event.pageX,
@@ -280,8 +288,10 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
 
   function dragSlides(event) {
     if (!dragState.current.active || !carouselRef.current) return
+    const dragDistance = event.pageX - dragState.current.startX
+    if (Math.abs(dragDistance) < 6) return
     event.preventDefault()
-    carouselRef.current.scrollLeft = dragState.current.scrollLeft - (event.pageX - dragState.current.startX)
+    carouselRef.current.scrollLeft = dragState.current.scrollLeft - dragDistance
   }
 
   function stopDrag() {
@@ -366,6 +376,7 @@ function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
             onPointerMove={dragSlides}
             onPointerUp={stopDrag}
             onPointerCancel={stopDrag}
+            onPointerLeave={stopDrag}
             className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth rounded-lg pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {items.map((item, index) => (
@@ -424,6 +435,7 @@ function StudySetItemCard({
       <article className="flex min-h-80 flex-[0_0_100%] snap-center select-none rounded-md border border-orange-200/10 bg-black/18 p-4 md:p-6">
         <button
           type="button"
+          data-no-carousel-drag="true"
           onClick={onToggleFlip}
           className={`forge-row-hover flex w-full flex-col justify-between rounded-md border p-6 text-left transition ${
             flipped ? 'border-amber-300/45 bg-orange-500/10 shadow-[0_0_28px_rgba(251,191,36,0.12)]' : 'border-orange-200/10 bg-black/20'
@@ -469,6 +481,7 @@ function StudySetItemCard({
                   <button
                     key={choice}
                     type="button"
+                    data-no-carousel-drag="true"
                     onClick={() => onChooseAnswer(choice)}
                     disabled={answerSelected}
                     className={`rounded-md border px-3 py-3 text-left text-sm font-semibold transition ${resultClass} disabled:cursor-default`}
