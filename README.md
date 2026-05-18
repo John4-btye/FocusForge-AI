@@ -1,6 +1,6 @@
 # FocusForge AI
 
-FocusForge AI is a full-stack student productivity app built with React, Flask, PostgreSQL, and JWT authentication. It helps students organize courses, manage academic tasks, write notes, track study sessions, and review productivity insights from one dashboard.
+FocusForge AI is a full-stack student productivity app built with React, Flask, PostgreSQL, and JWT authentication. It helps students organize courses by subject, manage academic tasks, write notes, track study sessions, use focus and break timers, and create AI-assisted flashcard and quiz collections from one dashboard.
 
 ## Technologies
 
@@ -8,12 +8,38 @@ FocusForge AI is a full-stack student productivity app built with React, Flask, 
 - Tailwind CSS
 - React Router
 - Axios
+- Lucide React
 - Flask
 - Flask-SQLAlchemy
 - Flask-Migrate
 - Flask-JWT-Extended
+- Flask-CORS
 - PostgreSQL
+- bcrypt
+- python-dotenv
+- requests
 - Groq API
+
+## Core Functionality
+
+- User signup and login with JWT authentication
+- Protected frontend routes
+- Ownership-based access control so users only access their own data
+- Courses CRUD using Course Name and Subject fields
+- Tasks CRUD with pagination and completion tracking
+- Notes CRUD with pagination
+- Study session CRUD and dashboard study-time stats
+- Dashboard shortcut cards that route to the matching app sections
+- AI Forge chatbot for flashcards, quizzes, navigation help, explanations, and study planning
+- AI-generated study sets that can be saved as user-owned collections
+- Interactive collection viewer with carousel navigation
+- Clickable quiz answers with correct/incorrect feedback
+- Flip-style flashcards
+- Focus timer with preset/custom durations, completion sounds, and optional global timer display
+- Break timer mode with short break presets for recovery between study sessions
+- Profile page with editable account details
+- Light and dark theme support
+- In-app modals and toast notifications for cleaner user feedback
 
 ## Setup And Run Instructions
 
@@ -67,20 +93,38 @@ npm run dev
 
 Open the local Vite URL shown in the terminal, usually `http://localhost:5173`.
 
-## Core Functionality
-
-- User signup and login with JWT authentication
-- Protected frontend routes
-- Ownership-based access control
-- Courses CRUD
-- Tasks CRUD with pagination
-- Notes CRUD with pagination
-- Study session CRUD
-- Dashboard summary data
-- AI Forge chatbot for flashcards, quizzes, navigation help, explanations, and study planning
-
 ## AI Setup
 
-FocusForge AI uses Groq's free API plan with `openai/gpt-oss-120b` for the chatbot. Create a Groq API key, add it to `server/.env` as `GROQ_API_KEY`, then restart the Flask backend. Free usage is rate-limited, so `llama-3.3-70b-versatile` can be used as `GROQ_MODEL` if the default model hits limits.
+FocusForge AI uses Groq's free API plan with `openai/gpt-oss-120b` for the chatbot and study-set generation. Create a Groq API key, add it to `server/.env` as `GROQ_API_KEY`, then restart the Flask backend.
 
-The AI route is protected, so users must be logged in before using the chatbot.
+Free usage is rate-limited. If the default model hits limits, use this fallback in `server/.env`:
+
+```env
+GROQ_MODEL=llama-3.3-70b-versatile
+```
+
+The AI routes are protected, so users must be logged in before using the chatbot or generating study sets.
+
+## Useful Commands
+
+Backend route check:
+
+```bash
+cd server
+venv/bin/python -m flask --app app routes
+```
+
+Frontend checks:
+
+```bash
+cd client
+npm run lint
+npm run build
+```
+
+## Project Notes
+
+- The backend stores data in PostgreSQL with SQLAlchemy models and Flask-Migrate migrations.
+- The normal setup path only requires `flask db upgrade`; do not run `flask db init` for a fresh clone because migrations are already included.
+- The frontend keeps API calls centralized through Axios and stores auth state in React context.
+- AI API keys stay on the Flask server and are never exposed to the browser.
