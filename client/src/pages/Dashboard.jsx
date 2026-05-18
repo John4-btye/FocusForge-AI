@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
 import { formatDate } from '../utils/formatDate'
@@ -21,34 +22,34 @@ export default function Dashboard() {
         <p className="text-sm text-slate-400">{data.productivity_tip}</p>
       </div>
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Courses" value={data.course_count} />
-        <Stat label="Tasks" value={data.task_count} />
-        <Stat label="Completed" value={`${data.completed_task_percentage}%`} />
-        <Stat label="Study minutes" value={data.study_minutes_this_week} />
+        <Stat label="Courses" value={data.course_count} to="/courses" />
+        <Stat label="Tasks" value={data.task_count} to="/tasks" />
+        <Stat label="Completed" value={`${data.completed_task_percentage}%`} to="/tasks" />
+        <Stat label="Study minutes" value={data.study_minutes_this_week} to="/study-sessions" />
       </section>
       <section className="grid gap-6 lg:grid-cols-2">
-        <Panel title="Upcoming tasks">
+        <Panel title="Upcoming tasks" to="/tasks">
           {data.upcoming_tasks.length ? (
             <div className="space-y-3">
               {data.upcoming_tasks.map((task) => (
-                <div key={task.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-3">
+                <Link key={task.id} to="/tasks" className="forge-row-hover block rounded-md border border-orange-200/10 bg-black/18 p-3">
                   <p className="font-semibold text-orange-50">{task.title}</p>
                   <p className="text-sm text-slate-400">{formatDate(task.due_date)}</p>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
             <EmptyState title="No upcoming tasks" message="Add a task to start planning your week." />
           )}
         </Panel>
-        <Panel title="Recent notes">
+        <Panel title="Recent notes" to="/notes">
           {data.recent_notes.length ? (
             <div className="space-y-3">
               {data.recent_notes.map((note) => (
-                <div key={note.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-3">
+                <Link key={note.id} to="/notes" className="forge-row-hover block rounded-md border border-orange-200/10 bg-black/18 p-3">
                   <p className="font-semibold text-orange-50">{note.title}</p>
                   <p className="line-clamp-2 text-sm text-slate-400">{note.content}</p>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
@@ -60,21 +61,23 @@ export default function Dashboard() {
   )
 }
 
-function Stat({ label, value }) {
+function Stat({ label, value, to }) {
   // Compact metric card used for top-level dashboard totals.
   return (
-    <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
+    <Link to={to} className="forge-card-hot forge-hover-lift block rounded-lg p-5 focus:outline-none focus:ring-2 focus:ring-amber-300/60">
       <p className="text-sm font-semibold text-slate-400">{label}</p>
       <p className="mt-2 text-3xl font-black text-amber-200">{value}</p>
-    </div>
+    </Link>
   )
 }
 
-function Panel({ title, children }) {
+function Panel({ title, to, children }) {
   // Shared dashboard panel wrapper for task/note preview sections.
   return (
     <div className="forge-card forge-hover-lift rounded-lg p-5">
-      <h3 className="mb-4 text-lg font-bold text-orange-50">{title}</h3>
+      <Link to={to} className="mb-4 inline-block text-lg font-bold text-orange-50 transition hover:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/60">
+        {title}
+      </Link>
       {children}
     </div>
   )

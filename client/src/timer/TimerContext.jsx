@@ -10,6 +10,13 @@ export const timerOptions = [
   { label: '2 hr', minutes: 120 },
 ]
 
+export const breakOptions = [
+  { label: '5 min', minutes: 5 },
+  { label: '10 min', minutes: 10 },
+  { label: '15 min', minutes: 15 },
+  { label: '20 min', minutes: 20 },
+]
+
 export const timerSounds = [
   { id: 'bell', label: 'Forge bell', frequencies: [660, 880], duration: 0.9 },
   { id: 'chime', label: 'Bright chime', frequencies: [784, 1046], duration: 0.7 },
@@ -22,9 +29,12 @@ const TimerContext = createContext(null)
 export function TimerProvider({ children }) {
   // Timer state is global so the floating timer can follow users across pages.
   const [timerMinutes, setTimerMinutes] = useState(30)
+  const [timerMode, setTimerMode] = useState('focus')
   const [remainingSeconds, setRemainingSeconds] = useState(30 * 60)
   const [isRunning, setIsRunning] = useState(false)
   const [timerComplete, setTimerComplete] = useState(false)
+  const [completedMode, setCompletedMode] = useState(null)
+  const [completedFocusMinutes, setCompletedFocusMinutes] = useState(null)
   const [showGlobalTimer, setShowGlobalTimer] = useState(
     () => localStorage.getItem('focusforge_show_timer') === 'true',
   )
@@ -55,6 +65,10 @@ export function TimerProvider({ children }) {
           window.clearInterval(interval)
           setIsRunning(false)
           setTimerComplete(true)
+          setCompletedMode(timerMode)
+          if (timerMode === 'focus') {
+            setCompletedFocusMinutes(timerMinutes)
+          }
           notifyTimerComplete(selectedSound)
           return 0
         }
@@ -63,14 +77,27 @@ export function TimerProvider({ children }) {
     }, 1000)
 
     return () => window.clearInterval(interval)
-  }, [isRunning, selectedSound])
+  }, [isRunning, selectedSound, timerMinutes, timerMode])
 
   function selectTimer(minutes) {
     // Choosing a preset resets the active countdown to that duration.
+    setTimerMode('focus')
     setTimerMinutes(minutes)
     setRemainingSeconds(minutes * 60)
     setIsRunning(false)
     setTimerComplete(false)
+    setCompletedMode(null)
+    setCompletedFocusMinutes(null)
+  }
+
+  function selectBreak(minutes) {
+    // Break mode gives users a timed recovery period without logging study minutes.
+    setTimerMode('break')
+    setTimerMinutes(minutes)
+    setRemainingSeconds(minutes * 60)
+    setIsRunning(false)
+    setTimerComplete(false)
+    setCompletedMode(null)
   }
 
   function startTimer() {
@@ -79,6 +106,7 @@ export function TimerProvider({ children }) {
       setRemainingSeconds(totalSeconds)
     }
     setTimerComplete(false)
+    setCompletedMode(null)
     setIsRunning(true)
     requestNotificationPermission()
   }
@@ -90,6 +118,7 @@ export function TimerProvider({ children }) {
   function resetTimer() {
     setIsRunning(false)
     setTimerComplete(false)
+    setCompletedMode(null)
     setRemainingSeconds(totalSeconds)
   }
 
@@ -99,9 +128,12 @@ export function TimerProvider({ children }) {
 
   const value = {
     timerMinutes,
+    timerMode,
     remainingSeconds,
     isRunning,
     timerComplete,
+    completedMode,
+    completedFocusMinutes,
     showGlobalTimer,
     soundId,
     selectedSound,
@@ -109,13 +141,18 @@ export function TimerProvider({ children }) {
     progress,
     formattedTime,
     selectTimer,
+    selectBreak,
     startTimer,
     pauseTimer,
     resetTimer,
     setShowGlobalTimer,
     setSoundId,
     previewSound,
-    clearComplete: () => setTimerComplete(false),
+    clearComplete: () => {
+      setTimerComplete(false)
+      setCompletedMode(null)
+      setCompletedFocusMinutes(null)
+    },
   }
 
   return <TimerContext.Provider value={value}>{children}</TimerContext.Provider>
@@ -154,7 +191,7 @@ function notifyTimerComplete(sound) {
 
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification('FocusForge timer complete', {
-      body: 'Your study session is complete. Time to log it.',
+      body: 'Your timer is complete. Return to FocusForge when you are ready.',
     })
   }
 }

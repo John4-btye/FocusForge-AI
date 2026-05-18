@@ -8,7 +8,9 @@ export default function GlobalTimer() {
     isRunning,
     progress,
     showGlobalTimer,
+    completedMode,
     timerComplete,
+    timerMode,
     pauseTimer,
     resetTimer,
     setShowGlobalTimer,
@@ -26,7 +28,9 @@ export default function GlobalTimer() {
             <TimerReset size={20} />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-amber-300/75">Focus timer</p>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-amber-300/75">
+              {timerMode === 'break' ? 'Break timer' : 'Focus timer'}
+            </p>
             <p className="text-2xl font-black tabular-nums text-orange-50">{formattedTime}</p>
           </div>
         </div>
@@ -44,7 +48,11 @@ export default function GlobalTimer() {
         <div className="h-full rounded-full bg-gradient-to-r from-amber-300 to-orange-500 transition-all" style={{ width: `${progress}%` }} />
       </div>
 
-      {timerComplete && <p className="mt-3 text-sm font-semibold text-amber-200">Timer complete. Head to Study to log it.</p>}
+      {timerComplete && (
+        <p className="mt-3 text-sm font-semibold text-amber-200">
+          {completedMode === 'break' ? 'Break complete. Time to refocus.' : 'Timer complete. Head to Study to log it.'}
+        </p>
+      )}
 
       <div className="mt-4 flex gap-2">
         {!isRunning ? (

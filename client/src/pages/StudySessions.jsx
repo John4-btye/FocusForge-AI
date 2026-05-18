@@ -2,7 +2,7 @@ import { Pause, Play, RotateCcw, TimerReset } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import api from '../api/axios'
 import Modal from '../components/Modal'
-import { timerOptions, timerSounds, useTimer } from '../timer/TimerContext'
+import { breakOptions, timerOptions, timerSounds, useTimer } from '../timer/TimerContext'
 import { useToast } from '../toast/ToastContext'
 import { formatDate } from '../utils/formatDate'
 
@@ -27,12 +27,16 @@ export default function StudySessions() {
     progress,
     showGlobalTimer,
     soundId,
+    completedFocusMinutes,
+    completedMode,
     timerComplete,
     timerMinutes,
+    timerMode,
     clearComplete,
     pauseTimer,
     previewSound,
     resetTimer,
+    selectBreak,
     selectTimer,
     setShowGlobalTimer,
     setSoundId,
@@ -76,10 +80,15 @@ export default function StudySessions() {
 
   async function logCompletedTimer() {
     // Completed timer logs reuse the study-session API so dashboard stats update.
+    if (completedMode !== 'focus') {
+      toast.info('Break timers are not logged as study sessions.')
+      return
+    }
+
     try {
       await api.post('/study-sessions', {
         course_id: timerCourseId || null,
-        duration_minutes: timerMinutes,
+        duration_minutes: completedFocusMinutes || timerMinutes,
         notes: timerNotes || 'Focused timer session',
       })
       clearComplete()
@@ -149,6 +158,9 @@ export default function StudySessions() {
             <div className="grid h-16 w-16 place-items-center rounded-md bg-orange-500/15 text-amber-300">
               <TimerReset size={30} />
             </div>
+            <p className="mt-4 rounded-md border border-orange-200/10 bg-black/18 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-amber-300/75">
+              {timerMode === 'break' ? 'Break timer' : 'Focus timer'}
+            </p>
             <p className="mt-5 text-5xl font-black tabular-nums text-orange-50">{formattedTime}</p>
             <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-black/30">
               <div
@@ -158,7 +170,7 @@ export default function StudySessions() {
             </div>
             {timerComplete && (
               <p className="mt-4 rounded-md border border-amber-300/30 bg-orange-500/10 px-3 py-2 text-sm font-semibold text-amber-200">
-                Time is up. Nice work.
+                {completedMode === 'break' ? 'Break complete. Return when you feel ready.' : 'Time is up. Nice work.'}
               </p>
             )}
           </div>
@@ -184,6 +196,34 @@ export default function StudySessions() {
                   {option.label}
                 </button>
               ))}
+            </div>
+
+            <div className="rounded-lg border border-orange-200/10 bg-black/15 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-black text-orange-50">Break timer</h4>
+                  <p className="text-sm text-slate-400">Use a short reset between study rounds. Breaks are not logged as study minutes.</p>
+                </div>
+                <span className="rounded-md border border-amber-300/20 bg-orange-500/10 px-2 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
+                  Retention aid
+                </span>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                {breakOptions.map((option) => (
+                  <button
+                    key={option.minutes}
+                    type="button"
+                    onClick={() => selectBreak(option.minutes)}
+                    className={`rounded-md border px-3 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${
+                      timerMode === 'break' && timerMinutes === option.minutes
+                        ? 'border-amber-300/70 bg-orange-500/15 text-orange-50'
+                        : 'border-orange-200/10 bg-black/15 text-slate-300 hover:border-orange-200/30'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -245,7 +285,7 @@ export default function StudySessions() {
                 <RotateCcw size={18} />
                 Reset
               </button>
-              <button type="button" disabled={!timerComplete} onClick={logCompletedTimer} className="forge-button px-4 py-2 disabled:opacity-40">
+              <button type="button" disabled={!timerComplete || completedMode !== 'focus'} onClick={logCompletedTimer} className="forge-button px-4 py-2 disabled:opacity-40">
                 Log completed session
               </button>
             </div>
