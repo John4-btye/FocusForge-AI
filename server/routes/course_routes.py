@@ -48,6 +48,7 @@ def get_course(course_id):
     data = course.to_dict()
     data["tasks"] = [task.to_dict() for task in course.tasks]
     data["notes"] = [note.to_dict() for note in course.notes]
+    data["study_sets"] = [study_set.to_dict() for study_set in course.study_sets]
     return jsonify(data)
 
 

@@ -75,6 +75,7 @@ class Course(db.Model, SerializerMixin):
     study_sessions = db.relationship(
         "StudySession", backref="course", cascade="all, delete-orphan"
     )
+    study_sets = db.relationship("StudySet", backref="course")
 
     def to_dict(self):
         # Add lightweight counts so the frontend can render course summary cards.

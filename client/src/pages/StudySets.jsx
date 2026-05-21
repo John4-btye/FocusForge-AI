@@ -21,6 +21,7 @@ export default function StudySets() {
   const [generatedSet, setGeneratedSet] = useState(null)
   const [generator, setGenerator] = useState(initialGenerator)
   const [deletingSet, setDeletingSet] = useState(null)
+  const [assigningSetId, setAssigningSetId] = useState(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -90,6 +91,27 @@ export default function StudySets() {
     // Detail fetch includes study set items, unlike the lightweight list payload.
     const response = await api.get(`/study-sets/${id}`)
     setSelectedSet(response.data)
+  }
+
+  async function assignStudySet(studySet, courseId) {
+    // Users can manually attach or detach a saved study set from a course later.
+    setAssigningSetId(studySet.id)
+    try {
+      const response = await api.patch(`/study-sets/${studySet.id}`, {
+        course_id: courseId || null,
+      })
+      setStudySets((current) => current.map((item) => (
+        item.id === studySet.id ? { ...item, course_id: response.data.course_id } : item
+      )))
+      if (selectedSet?.id === studySet.id) {
+        setSelectedSet(response.data)
+      }
+      toast.success(courseId ? 'Study set assigned to course.' : 'Study set removed from course.')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Unable to update study set course.')
+    } finally {
+      setAssigningSetId(null)
+    }
   }
 
   async function confirmDelete() {
@@ -192,10 +214,21 @@ export default function StudySets() {
                       <p className="font-bold text-orange-50">{studySet.title}</p>
                       <p className="mt-1 text-sm text-slate-400">{studySet.item_count} items · {studySet.set_type}</p>
                     </button>
-                    <button onClick={() => setDeletingSet(studySet)} className="forge-button-danger inline-flex items-center gap-2 px-3 py-1 text-sm">
-                      <Trash2 size={15} />
-                      Delete
-                    </button>
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <select
+                        className="forge-input min-w-36 px-2 py-1 text-sm"
+                        value={studySet.course_id || ''}
+                        disabled={assigningSetId === studySet.id}
+                        onChange={(event) => assignStudySet(studySet, event.target.value)}
+                      >
+                        <option value="">No course</option>
+                        {courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}
+                      </select>
+                      <button onClick={() => setDeletingSet(studySet)} className="forge-button-danger inline-flex items-center gap-2 px-3 py-1 text-sm">
+                        <Trash2 size={15} />
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </article>
               ))}
@@ -231,7 +264,7 @@ export default function StudySets() {
   )
 }
 
-function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
+export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   // Preview component renders both generated drafts and saved study set details.
   const carouselRef = useRef(null)
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0 })

@@ -81,6 +81,27 @@ def get_study_set(set_id):
     return jsonify(study_set.to_dict(include_items=True))
 
 
+@study_set_bp.patch("/<int:set_id>")
+@jwt_required()
+def update_study_set(set_id):
+    # Reassignment lets saved sets move into or out of a course without changing items.
+    user_id = current_user_id()
+    study_set = StudySet.query.filter_by(id=set_id, user_id=user_id).first()
+    if not study_set:
+        return error_response("Study set not found", 404)
+
+    data = request.get_json() or {}
+    if "course_id" in data:
+        course_id = data.get("course_id")
+        _, course_error = validate_course_access(course_id, user_id)
+        if course_error:
+            return course_error
+        study_set.course_id = course_id
+
+    db.session.commit()
+    return jsonify(study_set.to_dict(include_items=True))
+
+
 @study_set_bp.delete("/<int:set_id>")
 @jwt_required()
 def delete_study_set(set_id):
