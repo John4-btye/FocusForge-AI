@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthContext'
 import ProtectedRoute from './auth/ProtectedRoute'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import GlobalAI from './components/GlobalAI'
 import GlobalTimer from './components/GlobalTimer'
 import About from './pages/About'
 import Courses from './pages/Courses'
@@ -50,6 +51,7 @@ function App() {
                     </Routes>
                   </main>
                 </div>
+                <GlobalAI />
                 <GlobalTimer />
               </div>
             </ProtectedRoute>

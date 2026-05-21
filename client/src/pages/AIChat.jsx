@@ -1,8 +1,6 @@
-import { useMemo, useState } from 'react'
 import { Bot, BookMarked, HelpCircle, ListChecks, NotebookTabs, Send, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import api from '../api/axios'
-import { useToast } from '../toast/ToastContext'
+import { useAI } from '../ai/AIContext'
 
 const quickPrompts = [
   // Preset prompts speed up common student AI requests.
@@ -28,58 +26,19 @@ const quickPrompts = [
   },
 ]
 
-const welcomeMessage = {
-  role: 'assistant',
-  content:
-    'Welcome to the AI Forge. I can make flashcards, build quizzes, explain concepts, plan study sessions, and help you find your way around FocusForge.',
-}
-
 export default function AIChat() {
-  // Chat state stores the visible conversation and temporary request/error state.
-  const [messages, setMessages] = useState([welcomeMessage])
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const toast = useToast()
-
-  const chatHistory = useMemo(
-    // Exclude system-like messages before sending recent visible history to the backend.
-    () => messages.filter((message) => message.role !== 'system'),
-    [messages],
-  )
-
-  async function sendMessage(customPrompt) {
-    // Optimistic chat flow: show the user message before waiting for AI response.
-    const message = (customPrompt ?? input).trim()
-    if (!message || loading) return
-
-    const userMessage = { role: 'user', content: message }
-    const nextMessages = [...messages, userMessage]
-    setMessages(nextMessages)
-    setInput('')
-    setError('')
-    setLoading(true)
-
-    try {
-      const response = await api.post('/ai/chat', {
-        message,
-        history: chatHistory,
-      })
-      setMessages([...nextMessages, { role: 'assistant', content: response.data.reply }])
-    } catch (err) {
-      const message = err.response?.data?.error || 'Unable to reach the AI Forge right now.'
-      setError(message)
-      toast.error(message)
-      setMessages(nextMessages)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  function fillQuickPrompt(prompt) {
-    // Quick prompts populate the input without sending automatically.
-    setInput(prompt)
-  }
+  // AI Forge uses the same shared chat state as the global floating assistant.
+  const {
+    error,
+    fillQuickPrompt,
+    input,
+    loading,
+    messages,
+    sendMessage,
+    setInput,
+    setShowGlobalAi,
+    showGlobalAi,
+  } = useAI()
 
   return (
     <div className="space-y-6">
@@ -109,6 +68,19 @@ export default function AIChat() {
         <BookMarked className="text-amber-300" size={20} />
         <span className="font-bold">Generate and save Quizlet-style study sets</span>
       </Link>
+
+      <label className="forge-card forge-row-hover flex items-center justify-between gap-4 rounded-lg p-4 text-sm font-semibold text-slate-300">
+        <span>
+          <span className="block font-black text-orange-50">Show AI Forge on every screen</span>
+          <span className="mt-1 block text-slate-400">Keep the assistant available globally while you move through the app.</span>
+        </span>
+        <input
+          type="checkbox"
+          className="h-5 w-5 accent-orange-500"
+          checked={showGlobalAi}
+          onChange={(event) => setShowGlobalAi(event.target.checked)}
+        />
+      </label>
 
       <section className="forge-card-hot forge-hover-lift flex min-h-[34rem] flex-col rounded-lg">
         <div className="flex items-center gap-3 border-b border-orange-200/10 px-5 py-4">
