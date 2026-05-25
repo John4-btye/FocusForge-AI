@@ -41,7 +41,7 @@ export default function Dashboard() {
       content: data.recent_study_sets.length ? (
         <div className="space-y-3">
           {data.recent_study_sets.map((studySet) => (
-            <Link key={studySet.id} to="/study-sets" className="forge-row-hover block rounded-md border border-orange-200/10 bg-black/18 p-3">
+            <Link key={studySet.id} to={`/study-sets?set=${studySet.id}`} className="forge-row-hover block rounded-md border border-orange-200/10 bg-black/18 p-3">
               <p className="font-semibold text-orange-50">{studySet.title}</p>
               <p className="text-sm text-slate-400">{studySet.item_count} items · {studySet.set_type}</p>
             </Link>

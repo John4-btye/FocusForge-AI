@@ -1,5 +1,6 @@
 import { Brain, CheckCircle2, ChevronLeft, ChevronRight, ListChecks, NotebookTabs, RotateCcw, Save, Trash2, XCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
 import EmptyState from '../components/EmptyState'
 import Modal from '../components/Modal'
@@ -26,6 +27,8 @@ export default function StudySets() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const toast = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedSetId = searchParams.get('set')
 
   async function loadStudySets() {
     // Reload saved collection metadata after save or delete.
@@ -37,6 +40,11 @@ export default function StudySets() {
     api.get('/courses').then((response) => setCourses(response.data))
     api.get('/study-sets').then((response) => setStudySets(response.data))
   }, [])
+
+  useEffect(() => {
+    if (!requestedSetId || selectedSet?.id === Number(requestedSetId)) return
+    api.get(`/study-sets/${requestedSetId}`).then((response) => setSelectedSet(response.data))
+  }, [requestedSetId, selectedSet?.id])
 
   async function generateSet(event) {
     // Generation creates a preview only; the user chooses whether to save it.
@@ -74,6 +82,7 @@ export default function StudySets() {
         course_id: generator.course_id || null,
       })
       setSelectedSet(response.data)
+      setSearchParams({ set: String(response.data.id) })
       setGeneratedSet(null)
       setGenerator(initialGenerator)
       loadStudySets()
@@ -87,10 +96,13 @@ export default function StudySets() {
     }
   }
 
-  async function openStudySet(id) {
+  async function openStudySet(id, syncUrl = false) {
     // Detail fetch includes study set items, unlike the lightweight list payload.
     const response = await api.get(`/study-sets/${id}`)
     setSelectedSet(response.data)
+    if (syncUrl) {
+      setSearchParams({ set: String(id) })
+    }
   }
 
   async function assignStudySet(studySet, courseId) {
@@ -122,6 +134,7 @@ export default function StudySets() {
       await api.delete(`/study-sets/${deletingSet.id}`)
       if (selectedSet?.id === deletingSet.id) {
         setSelectedSet(null)
+        setSearchParams({})
       }
       setDeletingSet(null)
       loadStudySets()
@@ -210,7 +223,7 @@ export default function StudySets() {
               {studySets.map((studySet) => (
                 <article key={studySet.id} className="forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <button type="button" onClick={() => openStudySet(studySet.id)} className="min-w-0 text-left">
+                    <button type="button" onClick={() => openStudySet(studySet.id, true)} className="min-w-0 text-left">
                       <p className="font-bold text-orange-50">{studySet.title}</p>
                       <p className="mt-1 text-sm text-slate-400">{studySet.item_count} items · {studySet.set_type}</p>
                     </button>
