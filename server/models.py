@@ -65,7 +65,7 @@ class Course(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String(120), nullable=False)
-    instructor = db.Column(db.String(120))
+    subject = db.Column(db.String(120))
     color = db.Column(db.String(20), default="#2563eb", nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 

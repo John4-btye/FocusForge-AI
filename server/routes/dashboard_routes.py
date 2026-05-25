@@ -56,7 +56,7 @@ def get_dashboard():
         {
             "id": course.id,
             "name": course.name,
-            "subject": course.instructor,
+            "subject": course.subject,
             "color": course.color,
             "task_count": len(course.tasks),
             "note_count": len(course.notes),

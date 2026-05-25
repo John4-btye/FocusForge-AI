@@ -5,7 +5,7 @@ import EmptyState from '../components/EmptyState'
 import Modal from '../components/Modal'
 import { useToast } from '../toast/ToastContext'
 
-const initialForm = { name: '', instructor: '', color: '#f97316' }
+const initialForm = { name: '', subject: '', color: '#f97316' }
 
 export default function Courses() {
   // Courses page manages create/edit/delete state plus modal confirmation state.
@@ -45,7 +45,7 @@ export default function Courses() {
     setEditingCourse(course)
     setEditForm({
       name: course.name,
-      instructor: course.instructor || '',
+      subject: course.subject || '',
       color: course.color || '#f97316',
     })
   }
@@ -91,7 +91,7 @@ export default function Courses() {
       </div>
       <form onSubmit={handleSubmit} className="forge-card forge-hover-lift grid gap-3 rounded-lg p-5 md:grid-cols-[1fr_1fr_auto_auto]">
         <input className="forge-input px-3 py-2" placeholder="Course Name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
-        <input className="forge-input px-3 py-2" placeholder="Subject" value={form.instructor} onChange={(event) => setForm({ ...form, instructor: event.target.value })} />
+        <input className="forge-input px-3 py-2" placeholder="Subject" value={form.subject} onChange={(event) => setForm({ ...form, subject: event.target.value })} />
         <input className="h-10 rounded-md border border-orange-200/20 bg-black/30 px-2" type="color" value={form.color} onChange={(event) => setForm({ ...form, color: event.target.value })} />
         <button className="forge-button px-4 py-2">Add</button>
       </form>
@@ -103,7 +103,7 @@ export default function Courses() {
                 <div>
                   <div className="mb-3 h-2 w-16 rounded-full shadow-[0_0_18px_rgba(249,115,22,0.32)]" style={{ background: course.color }} />
                   <h3 className="text-lg font-bold text-orange-50">{course.name}</h3>
-                  <p className="text-sm text-slate-400">{course.instructor || 'No subject listed'}</p>
+                  <p className="text-sm text-slate-400">{course.subject || 'No subject listed'}</p>
                   <p className="mt-3 text-sm text-slate-300">{course.task_count} tasks · {course.note_count} notes</p>
                 </div>
                 <div className="flex gap-2">
@@ -133,7 +133,7 @@ export default function Courses() {
         </label>
         <label className="block text-sm font-semibold text-orange-100/90">
           Subject
-          <input className="forge-input mt-2 px-3 py-2" value={editForm.instructor} onChange={(event) => setEditForm({ ...editForm, instructor: event.target.value })} />
+          <input className="forge-input mt-2 px-3 py-2" value={editForm.subject} onChange={(event) => setEditForm({ ...editForm, subject: event.target.value })} />
         </label>
         <label className="block text-sm font-semibold text-orange-100/90">
           Accent color

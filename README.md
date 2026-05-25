@@ -125,6 +125,7 @@ npm run build
 ## Project Notes
 
 - The backend stores data in PostgreSQL with SQLAlchemy models and Flask-Migrate migrations.
+- Study sets are user-owned collections and can optionally be assigned to a course for easier course-level review.
 - The normal setup path only requires `flask db upgrade`; do not run `flask db init` for a fresh clone because migrations are already included.
 - The frontend keeps API calls centralized through Axios and stores auth state in React context.
 - AI API keys stay on the Flask server and are never exposed to the browser.

@@ -31,7 +31,7 @@ export default function CourseDetails() {
       <div className="forge-card-hot forge-hover-lift rounded-lg p-5">
         <div className="h-2 w-20 rounded-full shadow-[0_0_18px_rgba(249,115,22,0.32)]" style={{ background: course.color }} />
         <h2 className="mt-4 text-2xl font-black text-orange-50">{course.name}</h2>
-        <p className="text-slate-400">{course.instructor || 'No subject listed'}</p>
+        <p className="text-slate-400">{course.subject || 'No subject listed'}</p>
       </div>
       <section className="grid gap-6 lg:grid-cols-2">
         <Panel title="Course tasks">

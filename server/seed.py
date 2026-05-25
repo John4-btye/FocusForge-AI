@@ -15,7 +15,7 @@ def seed():
         db.session.flush()
 
         course = Course(
-            user_id=user.id, name="Capstone Project", instructor="Professor", color="#0f766e"
+            user_id=user.id, name="Capstone Project", subject="Computer Science", color="#0f766e"
         )
         db.session.add(course)
         db.session.flush()

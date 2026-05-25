@@ -30,7 +30,7 @@ def create_course():
     course = Course(
         user_id=user_id,
         name=name,
-        instructor=data.get("instructor"),
+        subject=data.get("subject"),
         color=data.get("color") or "#2563eb",
     )
     db.session.add(course)
@@ -65,8 +65,8 @@ def update_course(course_id):
         if not data["name"].strip():
             return error_response("Course name cannot be blank", 400)
         course.name = data["name"].strip()
-    if "instructor" in data:
-        course.instructor = data["instructor"]
+    if "subject" in data:
+        course.subject = data["subject"]
     if "color" in data:
         course.color = data["color"] or course.color
 
