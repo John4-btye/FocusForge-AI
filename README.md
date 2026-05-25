@@ -31,11 +31,12 @@ FocusForge AI is a full-stack student productivity app built with React, Flask, 
 - Study session CRUD and dashboard study-time stats
 - Dashboard shortcut cards that route to the matching app sections
 - AI Forge chatbot for flashcards, quizzes, navigation help, explanations, and study planning
+- Sidebar utility cards for the optional AI assistant and global study timer
 - AI-generated study sets that can be saved as user-owned collections
 - Interactive collection viewer with carousel navigation
 - Clickable quiz answers with correct/incorrect feedback
 - Flip-style flashcards
-- Focus timer with preset/custom durations, completion sounds, and optional global timer display
+- Focus timer with preset/custom durations, completion sounds, and optional sidebar timer display
 - Break timer mode with short break presets for recovery between study sessions
 - Profile page with editable account details
 - Light and dark theme support
@@ -127,5 +128,5 @@ npm run build
 - The backend stores data in PostgreSQL with SQLAlchemy models and Flask-Migrate migrations.
 - Study sets are user-owned collections and can optionally be assigned to a course for easier course-level review.
 - The normal setup path only requires `flask db upgrade`; do not run `flask db init` for a fresh clone because migrations are already included.
-- The frontend keeps API calls centralized through Axios and stores auth state in React context.
+- The frontend keeps API calls centralized through Axios and stores auth, theme, AI, timer, and toast state in React context.
 - AI API keys stay on the Flask server and are never exposed to the browser.
