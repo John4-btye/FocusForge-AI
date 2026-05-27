@@ -96,6 +96,25 @@ npm run dev
 
 Open the local Vite URL shown in the terminal, usually `http://localhost:5173`.
 
+## API Routes
+
+All protected routes require a JWT bearer token in the `Authorization` header.
+
+- `POST /api/signup` - create a user account and return a JWT
+- `POST /api/login` - log in and return a JWT
+- `GET /api/me` - restore the current logged-in user
+- `PATCH /api/me` - update profile details
+- `GET/POST /api/courses` and `GET/PATCH/DELETE /api/courses/:id` - manage user-owned courses
+- `GET/POST /api/tasks` and `GET/PATCH/DELETE /api/tasks/:id` - manage user-owned tasks
+- `GET/POST /api/notes` and `GET/PATCH/DELETE /api/notes/:id` - manage user-owned notes
+- `GET/POST /api/study-sessions` and `PATCH/DELETE /api/study-sessions/:id` - manage study logs
+- `GET/POST /api/study-sets` and `GET/PATCH/DELETE /api/study-sets/:id` - manage saved flashcard and quiz collections
+- `POST /api/ai/chat` - send a chatbot message
+- `POST /api/ai/generate-study-set` - generate flashcards or quizzes
+- `GET /api/dashboard` - load dashboard summary data
+- `GET /api/heatmap` - load yearly study activity data
+- `GET /api/health` - confirm the backend is running
+
 ## AI Setup
 
 FocusForge AI uses Groq's free API plan with `openai/gpt-oss-120b` for the chatbot and study-set generation. Create a Groq API key, add it to `server/.env` as `GROQ_API_KEY`, then restart the Flask backend.
