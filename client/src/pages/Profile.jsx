@@ -1,4 +1,4 @@
-import { Moon, Save, Sun, User } from 'lucide-react'
+import { Flame, Moon, Save, Sun, User } from 'lucide-react'
 import { useState } from 'react'
 import api from '../api/axios'
 import { useAuth } from '../auth/AuthContext'
@@ -8,7 +8,7 @@ import { useToast } from '../toast/ToastContext'
 export default function Profile() {
   // Profile page edits account details and controls the persisted app theme.
   const { user, updateUser } = useAuth()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, ambientEmbers, setAmbientEmbers } = useTheme()
   const [form, setForm] = useState(() => ({
     username: user?.username || '',
     email: user?.email || '',
@@ -155,6 +155,38 @@ export default function Profile() {
               <p className="mt-1 text-sm text-slate-400">Warm paper, clean panels, and forge accents.</p>
             </button>
           </div>
+
+          <div className="mt-6 rounded-lg border border-orange-200/10 bg-black/15 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-orange-500/15 text-amber-300">
+                  <Flame size={20} />
+                </div>
+                <div>
+                  <p className="font-bold text-orange-50">Ambient embers</p>
+                  <p className="mt-1 text-sm text-slate-400">Show subtle floating forge sparks in the open background space.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAmbientEmbers((value) => !value)}
+                className={`relative h-8 w-14 rounded-full border transition ${
+                  ambientEmbers
+                    ? 'border-amber-300/60 bg-orange-500/30 shadow-[0_0_22px_rgba(249,115,22,0.18)]'
+                    : 'border-slate-500/30 bg-black/20'
+                }`}
+                aria-pressed={ambientEmbers}
+                aria-label="Toggle ambient embers"
+              >
+                <span
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-amber-200 transition ${
+                    ambientEmbers ? 'left-7' : 'left-1 bg-slate-400'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>

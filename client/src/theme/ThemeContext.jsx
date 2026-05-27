@@ -6,6 +6,9 @@ const ThemeContext = createContext(null)
 export function ThemeProvider({ children }) {
   // Theme is persisted locally so the user's light/dark choice survives refreshes.
   const [theme, setTheme] = useState(() => localStorage.getItem('focusforge_theme') || 'dark')
+  const [ambientEmbers, setAmbientEmbers] = useState(
+    () => localStorage.getItem('focusforge_ambient_embers') !== 'false',
+  )
 
   useEffect(() => {
     // The data attribute lets global CSS theme both custom classes and Tailwind utilities.
@@ -13,7 +16,15 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('focusforge_theme', theme)
   }, [theme])
 
-  const value = useMemo(() => ({ theme, setTheme, isLight: theme === 'light' }), [theme])
+  useEffect(() => {
+    document.documentElement.dataset.embers = ambientEmbers ? 'on' : 'off'
+    localStorage.setItem('focusforge_ambient_embers', String(ambientEmbers))
+  }, [ambientEmbers])
+
+  const value = useMemo(
+    () => ({ theme, setTheme, isLight: theme === 'light', ambientEmbers, setAmbientEmbers }),
+    [ambientEmbers, theme],
+  )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }

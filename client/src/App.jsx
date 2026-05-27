@@ -3,10 +3,12 @@ import { AuthProvider } from './auth/AuthContext'
 import ProtectedRoute from './auth/ProtectedRoute'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import ForgeEmbers from './components/ForgeEmbers'
 import About from './pages/About'
 import Courses from './pages/Courses'
 import CourseDetails from './pages/CourseDetails'
 import Dashboard from './pages/Dashboard'
+import Heatmap from './pages/Heatmap'
 import AIChat from './pages/AIChat'
 import Login from './pages/Login'
 import Notes from './pages/Notes'
@@ -29,6 +31,7 @@ function App() {
             <ProtectedRoute>
               {/* Authenticated shell: shared nav/sidebar wraps all dashboard pages. */}
               <div className="forge-bg min-h-screen">
+                <ForgeEmbers />
                 <Navbar />
                 <div className="mx-auto flex max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
                   <Sidebar />
@@ -43,6 +46,7 @@ function App() {
                       <Route path="/notes" element={<Notes />} />
                       <Route path="/study-sets" element={<StudySets />} />
                       <Route path="/study-sessions" element={<StudySessions />} />
+                      <Route path="/heatmap" element={<Heatmap />} />
                       <Route path="/ai-chat" element={<AIChat />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/about" element={<About />} />

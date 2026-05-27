@@ -9,6 +9,7 @@ from routes.auth_routes import auth_bp
 from routes.ai_routes import ai_bp
 from routes.course_routes import course_bp
 from routes.dashboard_routes import dashboard_bp
+from routes.heatmap_routes import heatmap_bp
 from routes.note_routes import note_bp
 from routes.study_session_routes import study_session_bp
 from routes.study_set_routes import study_set_bp
@@ -53,6 +54,7 @@ def create_app():
     app.register_blueprint(study_session_bp, url_prefix="/api/study-sessions")
     app.register_blueprint(study_set_bp, url_prefix="/api/study-sets")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
+    app.register_blueprint(heatmap_bp, url_prefix="/api/heatmap")
 
     @app.get("/api/health")
     def health_check():

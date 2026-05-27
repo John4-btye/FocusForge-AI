@@ -90,6 +90,102 @@ textarea {
   z-index: 1;
 }
 
+
+.forge-embers {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.forge-ember-particle {
+  position: absolute;
+  left: var(--ember-x);
+  bottom: -3rem;
+  width: var(--ember-size);
+  height: var(--ember-size);
+  border-radius: 999px;
+  background: #ffd36f;
+  box-shadow:
+    0 0 12px rgba(255, 211, 111, 0.7),
+    0 0 24px rgba(249, 115, 22, 0.34);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.85);
+  animation: forge-floating-ember var(--ember-duration) ease-in-out var(--ember-delay) infinite;
+}
+
+.forge-ember-particle:nth-child(3n) {
+  background: #f8b12d;
+  animation-name: forge-floating-spark;
+}
+
+.forge-ember-particle:nth-child(4n) {
+  filter: blur(0.25px);
+}
+
+[data-embers='off'] .forge-embers {
+  display: none;
+}
+
+@keyframes forge-floating-ember {
+  0%,
+  38%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.75);
+  }
+
+  44% {
+    opacity: 0.08;
+  }
+
+  57% {
+    opacity: 0.14;
+    transform: translate3d(calc(var(--ember-drift) * 0.45), -32vh, 0) scale(1);
+  }
+
+  68% {
+    opacity: 0.07;
+  }
+
+  78% {
+    opacity: 0;
+    transform: translate3d(var(--ember-drift), -72vh, 0) scale(0.65);
+  }
+}
+
+@keyframes forge-floating-spark {
+  0%,
+  42%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.7);
+  }
+
+  48% {
+    opacity: 0.08;
+  }
+
+  53% {
+    opacity: 0.16;
+    transform: translate3d(calc(var(--ember-drift) * -0.25), -24vh, 0) scale(1.18);
+  }
+
+  56% {
+    opacity: 0.055;
+  }
+
+  63% {
+    opacity: 0.13;
+  }
+
+  76% {
+    opacity: 0;
+    transform: translate3d(var(--ember-drift), -68vh, 0) scale(0.55);
+  }
+}
+
 @keyframes forge-ember-drift {
   0% {
     transform: translate3d(-1.5rem, -0.5rem, 0) scale(1);
@@ -327,6 +423,15 @@ textarea {
   opacity: 0.48;
 }
 
+
+
+[data-theme='light'] .forge-ember-particle {
+  background: #c25e14;
+  box-shadow:
+    0 0 9px rgba(194, 94, 20, 0.3),
+    0 0 18px rgba(248, 177, 45, 0.2);
+}
+
 [data-theme='light'] .forge-bg::after {
   background:
     linear-gradient(115deg, transparent 0 42%, rgba(194, 94, 20, 0.04) 48%, transparent 56% 100%),
@@ -432,9 +537,20 @@ textarea {
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
+@media (max-width: 640px) {
+  .forge-ember-particle:nth-child(n + 9) {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .forge-bg::before,
-  .forge-bg::after {
+  .forge-bg::after,
+  .forge-ember-particle {
     animation: none;
+  }
+
+  .forge-ember-particle {
+    display: none;
   }
 }

@@ -1,4 +1,4 @@
-import { BookMarked, BookOpen, Bot, ClipboardList, Info, LayoutDashboard, NotebookPen, Timer, User } from 'lucide-react'
+import { BookMarked, BookOpen, Bot, ClipboardList, Flame, Info, LayoutDashboard, NotebookPen, Timer, User } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import GlobalAI from './GlobalAI'
 import GlobalTimer from './GlobalTimer'
@@ -11,6 +11,7 @@ const links = [
   { to: '/notes', label: 'Notes', icon: NotebookPen },
   { to: '/study-sets', label: 'Study Sets', icon: BookMarked },
   { to: '/study-sessions', label: 'Study', icon: Timer },
+  { to: '/heatmap', label: 'Heatmap', icon: Flame },
   { to: '/ai-chat', label: 'AI Forge', icon: Bot },
   { to: '/profile', label: 'Profile', icon: User },
   { to: '/about', label: 'About', icon: Info },

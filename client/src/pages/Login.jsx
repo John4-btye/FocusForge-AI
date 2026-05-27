@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import BrandMark from '../components/BrandMark'
+import ForgeEmbers from '../components/ForgeEmbers'
 
 export default function Login() {
   // Login form stores the JWT through AuthContext, then redirects into the app.
@@ -26,6 +27,7 @@ export default function Login() {
 
   return (
     <main className="forge-bg grid min-h-screen place-items-center px-4 py-10">
+      <ForgeEmbers />
       <form onSubmit={handleSubmit} className="forge-card-hot w-full max-w-md rounded-lg p-8">
         <BrandMark />
         <div className="forge-divider-glow my-6 h-px" />
