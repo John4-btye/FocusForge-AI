@@ -13,4 +13,19 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const requestUrl = error.config?.url || ''
+    const isAuthRequest = requestUrl.includes('/login') || requestUrl.includes('/signup')
+
+    if (error.response?.status === 401 && !isAuthRequest) {
+      localStorage.removeItem('focusforge_token')
+      window.dispatchEvent(new Event('focusforge:auth-expired'))
+    }
+
+    return Promise.reject(error)
+  },
+)
+
 export default api

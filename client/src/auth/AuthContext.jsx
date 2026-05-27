@@ -31,6 +31,16 @@ export function AuthProvider({ children }) {
     loadUser()
   }, [])
 
+  useEffect(() => {
+    function handleAuthExpired() {
+      setUser(null)
+      setLoading(false)
+    }
+
+    window.addEventListener('focusforge:auth-expired', handleAuthExpired)
+    return () => window.removeEventListener('focusforge:auth-expired', handleAuthExpired)
+  }, [])
+
   async function login(credentials) {
     // Store token first, then expose user state to the rest of the React app.
     const response = await api.post('/login', credentials)
