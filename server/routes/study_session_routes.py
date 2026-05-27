@@ -5,8 +5,8 @@ from flask_jwt_extended import jwt_required
 from models import StudySession, db
 from routes.helpers import (
     current_user_id,
-    error_response,
     parse_date,
+    parse_positive_int,
     validate_course_access,
 )
 
@@ -35,18 +35,22 @@ def create_study_session():
     course_id = data.get("course_id")
     duration_minutes = data.get("duration_minutes")
 
-    if not duration_minutes or int(duration_minutes) <= 0:
-        return error_response("Duration must be greater than 0", 400)
+    duration_minutes, duration_error = parse_positive_int(duration_minutes, "Duration")
+    if duration_error:
+        return duration_error
 
-    _, course_error = validate_course_access(course_id, user_id)
+    course, course_error = validate_course_access(course_id, user_id)
     if course_error:
         return course_error
+    session_date, date_error = parse_date(data.get("session_date"), "Session date")
+    if date_error:
+        return date_error
 
     session = StudySession(
         user_id=user_id,
-        course_id=course_id,
-        duration_minutes=int(duration_minutes),
-        session_date=parse_date(data.get("session_date")) or date.today(),
+        course_id=course.id if course else None,
+        duration_minutes=duration_minutes,
+        session_date=session_date or date.today(),
         notes=data.get("notes"),
     )
     db.session.add(session)
@@ -65,16 +69,20 @@ def update_study_session(session_id):
 
     data = request.get_json() or {}
     if "course_id" in data:
-        _, course_error = validate_course_access(data.get("course_id"), user_id)
+        course, course_error = validate_course_access(data.get("course_id"), user_id)
         if course_error:
             return course_error
-        session.course_id = data.get("course_id")
+        session.course_id = course.id if course else None
     if "duration_minutes" in data:
-        if int(data["duration_minutes"]) <= 0:
-            return error_response("Duration must be greater than 0", 400)
-        session.duration_minutes = int(data["duration_minutes"])
+        duration_minutes, duration_error = parse_positive_int(data.get("duration_minutes"), "Duration")
+        if duration_error:
+            return duration_error
+        session.duration_minutes = duration_minutes
     if "session_date" in data:
-        session.session_date = parse_date(data.get("session_date")) or date.today()
+        session_date, date_error = parse_date(data.get("session_date"), "Session date")
+        if date_error:
+            return date_error
+        session.session_date = session_date or date.today()
     if "notes" in data:
         session.notes = data["notes"]
 

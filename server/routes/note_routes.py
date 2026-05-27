@@ -46,11 +46,11 @@ def create_note():
     if not title or not content:
         return error_response("Note title and content are required", 400)
 
-    _, course_error = validate_course_access(course_id, user_id)
+    course, course_error = validate_course_access(course_id, user_id)
     if course_error:
         return course_error
 
-    note = Note(user_id=user_id, course_id=course_id, title=title, content=content)
+    note = Note(user_id=user_id, course_id=course.id if course else None, title=title, content=content)
     db.session.add(note)
     db.session.commit()
     return jsonify(note.to_dict()), 201
@@ -78,10 +78,10 @@ def update_note(note_id):
     data = request.get_json() or {}
     if "course_id" in data:
         # A note cannot be moved into a course owned by another user.
-        _, course_error = validate_course_access(data.get("course_id"), user_id)
+        course, course_error = validate_course_access(data.get("course_id"), user_id)
         if course_error:
             return course_error
-        note.course_id = data.get("course_id")
+        note.course_id = course.id if course else None
     if "title" in data:
         if not data["title"].strip():
             return error_response("Note title cannot be blank", 400)

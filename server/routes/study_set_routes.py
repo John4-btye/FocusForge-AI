@@ -37,13 +37,13 @@ def create_study_set():
     if not items:
         return error_response("At least one item is required", 400)
 
-    _, course_error = validate_course_access(course_id, user_id)
+    course, course_error = validate_course_access(course_id, user_id)
     if course_error:
         return course_error
 
     study_set = StudySet(
         user_id=user_id,
-        course_id=course_id,
+        course_id=course.id if course else None,
         title=title,
         topic=topic,
         set_type=set_type,
@@ -93,10 +93,10 @@ def update_study_set(set_id):
     data = request.get_json() or {}
     if "course_id" in data:
         course_id = data.get("course_id")
-        _, course_error = validate_course_access(course_id, user_id)
+        course, course_error = validate_course_access(course_id, user_id)
         if course_error:
             return course_error
-        study_set.course_id = course_id
+        study_set.course_id = course.id if course else None
 
     db.session.commit()
     return jsonify(study_set.to_dict(include_items=True))

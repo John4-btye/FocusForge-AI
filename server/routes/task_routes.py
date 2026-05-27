@@ -50,16 +50,19 @@ def create_task():
     if not title:
         return error_response("Task title is required", 400)
 
-    _, course_error = validate_course_access(course_id, user_id)
+    course, course_error = validate_course_access(course_id, user_id)
     if course_error:
         return course_error
+    due_date, date_error = parse_date(data.get("due_date"), "Due date")
+    if date_error:
+        return date_error
 
     task = Task(
         user_id=user_id,
-        course_id=course_id,
+        course_id=course.id if course else None,
         title=title,
         description=data.get("description"),
-        due_date=parse_date(data.get("due_date")),
+        due_date=due_date,
         priority=data.get("priority") or "medium",
         completed=bool(data.get("completed", False)),
     )
@@ -90,10 +93,10 @@ def update_task(task_id):
     data = request.get_json() or {}
     if "course_id" in data:
         # Revalidate course ownership before reassigning a task to a course.
-        _, course_error = validate_course_access(data.get("course_id"), user_id)
+        course, course_error = validate_course_access(data.get("course_id"), user_id)
         if course_error:
             return course_error
-        task.course_id = data.get("course_id")
+        task.course_id = course.id if course else None
     if "title" in data:
         if not data["title"].strip():
             return error_response("Task title cannot be blank", 400)
@@ -101,7 +104,10 @@ def update_task(task_id):
     if "description" in data:
         task.description = data["description"]
     if "due_date" in data:
-        task.due_date = parse_date(data.get("due_date"))
+        due_date, date_error = parse_date(data.get("due_date"), "Due date")
+        if date_error:
+            return date_error
+        task.due_date = due_date
     if "priority" in data:
         task.priority = data["priority"] or "medium"
     if "completed" in data:
