@@ -1,4 +1,4 @@
-import { Brain, CheckCircle2, ChevronLeft, ChevronRight, ListChecks, NotebookTabs, RotateCcw, Save, Trash2, XCircle } from 'lucide-react'
+import { Brain, CheckCircle2, ChevronLeft, ChevronRight, Lightbulb, ListChecks, NotebookTabs, RotateCcw, Save, Trash2, XCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import api from '../api/axios'
@@ -283,7 +283,7 @@ export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0 })
   const [activeIndex, setActiveIndex] = useState(0)
   const [flippedCards, setFlippedCards] = useState({})
-  const [selectedAnswers, setSelectedAnswers] = useState({})
+  const [quizProgress, setQuizProgress] = useState({})
 
   if (!studySet) {
     return <EmptyState title="Nothing selected" message={emptyMessage} />
@@ -293,9 +293,11 @@ export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
   // Icon and answer layout shift based on whether the set is flashcards or quiz items.
   const Icon = isQuiz ? ListChecks : NotebookTabs
   const items = studySet.items || []
-  const answeredCount = Object.keys(selectedAnswers).length
-  const correctCount = items.reduce((total, item, index) => (
-    normalizeAnswer(selectedAnswers[index]) === normalizeAnswer(item.answer) ? total + 1 : total
+  const attemptedCount = items.reduce((total, _item, index) => (
+    (quizProgress[index]?.attempts || []).length ? total + 1 : total
+  ), 0)
+  const correctCount = items.reduce((total, _item, index) => (
+    quizProgress[index]?.solved ? total + 1 : total
   ), 0)
 
   function updateActiveSlide() {
@@ -349,16 +351,36 @@ export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
     setFlippedCards((current) => ({ ...current, [index]: !current[index] }))
   }
 
-  function chooseAnswer(index, choice) {
-    setSelectedAnswers((current) => {
-      if (current[index]) return current
-      return { ...current, [index]: choice }
+  function chooseAnswer(index, choice, answer) {
+    setQuizProgress((current) => {
+      const previous = current[index] || { attempts: [], solved: false, hintShown: false }
+      if (previous.solved || previous.attempts.includes(choice)) return current
+
+      const solved = normalizeAnswer(choice) === normalizeAnswer(answer)
+      return {
+        ...current,
+        [index]: {
+          ...previous,
+          attempts: [...previous.attempts, choice],
+          solved,
+        },
+      }
+    })
+  }
+
+  function showHint(index) {
+    setQuizProgress((current) => {
+      const previous = current[index] || { attempts: [], solved: false, hintShown: false }
+      return {
+        ...current,
+        [index]: { ...previous, hintShown: true },
+      }
     })
   }
 
   function resetStudyMode() {
     setFlippedCards({})
-    setSelectedAnswers({})
+    setQuizProgress({})
     scrollToSlide(0)
   }
 
@@ -382,7 +404,7 @@ export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
                 Card {items.length ? activeIndex + 1 : 0} of {items.length}
               </p>
               <p className="mt-1 text-xs font-semibold text-slate-500">
-                {isQuiz ? `${correctCount}/${items.length} correct · ${answeredCount}/${items.length} answered` : 'Click the card to flip between front and back'}
+                {isQuiz ? `${correctCount}/${items.length} correct · ${attemptedCount}/${items.length} attempted` : 'Click the card to flip between front and back'}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -432,9 +454,10 @@ export function StudySetPreview({ studySet, emptyMessage, carousel = false }) {
                 index={index}
                 carousel
                 isQuiz={isQuiz}
-                selectedAnswer={selectedAnswers[index]}
+                quizProgress={quizProgress[index]}
                 flipped={Boolean(flippedCards[index])}
-                onChooseAnswer={(choice) => chooseAnswer(index, choice)}
+                onChooseAnswer={(choice) => chooseAnswer(index, choice, item.answer)}
+                onShowHint={() => showHint(index)}
                 onToggleFlip={() => toggleFlashcard(index)}
               />
             ))}
@@ -470,9 +493,10 @@ function StudySetItemCard({
   index,
   carousel = false,
   isQuiz = false,
-  selectedAnswer = '',
+  quizProgress,
   flipped = false,
   onChooseAnswer,
+  onShowHint,
   onToggleFlip,
 }) {
   // One reusable item card supports stacked previews and the saved collection carousel.
@@ -501,8 +525,11 @@ function StudySetItemCard({
     )
   }
 
-  const answerSelected = Boolean(selectedAnswer)
-  const selectedIsCorrect = normalizeAnswer(selectedAnswer) === normalizeAnswer(item.answer)
+  const attempts = quizProgress?.attempts || []
+  const solved = Boolean(quizProgress?.solved)
+  const hintShown = Boolean(quizProgress?.hintShown)
+  const hasChoices = Array.isArray(item.choices) && item.choices.length > 0
+  const canUseQuizControls = carousel && isQuiz && hasChoices
 
   return (
     <article className={`forge-row-hover rounded-md border border-orange-200/10 bg-black/18 p-4 ${carousel ? 'min-h-80 flex-[0_0_100%] snap-center select-none md:p-6' : ''}`}>
@@ -510,16 +537,31 @@ function StudySetItemCard({
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-orange-500/15 text-sm font-black text-amber-200">
           {index + 1}
         </span>
-        <div className="min-w-0">
-          <p className="font-bold text-orange-50">{item.prompt}</p>
-          {Array.isArray(item.choices) && (
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p className="font-bold text-orange-50">{item.prompt}</p>
+            {canUseQuizControls && (
+              <button
+                type="button"
+                data-no-carousel-drag="true"
+                onClick={onShowHint}
+                disabled={solved || hintShown}
+                className="forge-button-subtle inline-flex shrink-0 items-center gap-2 px-3 py-1.5 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Lightbulb size={15} />
+                {hintShown ? 'Hint used' : 'Hint'}
+              </button>
+            )}
+          </div>
+
+          {hasChoices && (
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {item.choices.map((choice) => {
-                const isSelected = selectedAnswer === choice
+                const wasAttempted = attempts.includes(choice)
                 const isCorrect = normalizeAnswer(choice) === normalizeAnswer(item.answer)
-                const resultClass = answerSelected && isCorrect
+                const resultClass = solved && isCorrect
                   ? 'border-emerald-300/60 bg-emerald-500/15 text-emerald-100'
-                  : answerSelected && isSelected
+                  : wasAttempted
                     ? 'border-red-300/60 bg-red-500/15 text-red-100'
                     : 'border-orange-200/10 text-slate-300 hover:border-amber-300/45 hover:bg-orange-400/10'
 
@@ -529,7 +571,7 @@ function StudySetItemCard({
                     type="button"
                     data-no-carousel-drag="true"
                     onClick={() => onChooseAnswer(choice)}
-                    disabled={answerSelected}
+                    disabled={solved || wasAttempted}
                     className={`rounded-md border px-3 py-3 text-left text-sm font-semibold transition ${resultClass} disabled:cursor-default`}
                   >
                     {choice}
@@ -540,24 +582,52 @@ function StudySetItemCard({
               })}
             </div>
           )}
-          {(!carousel || !Array.isArray(item.choices) || answerSelected) && (
-            <p className={`mt-3 flex items-start gap-2 text-sm leading-6 ${carousel && answerSelected && !selectedIsCorrect ? 'text-red-100' : 'text-slate-300'}`}>
-              {carousel && answerSelected && !selectedIsCorrect ? (
-                <XCircle className="mt-0.5 shrink-0 text-red-300" size={16} />
-              ) : (
-                <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
-              )}
-              {carousel && answerSelected ? (
-                selectedIsCorrect ? `Correct: ${item.answer}` : `Correct answer: ${item.answer}`
-              ) : (
-                item.answer
-              )}
+
+          {hintShown && canUseQuizControls && (
+            <p className="mt-3 flex items-start gap-2 rounded-md border border-amber-300/20 bg-orange-500/10 p-3 text-sm leading-6 text-amber-100">
+              <Lightbulb className="mt-0.5 shrink-0 text-amber-300" size={16} />
+              {buildQuizHint(item, attempts)}
+            </p>
+          )}
+
+          {canUseQuizControls && attempts.length > 0 && !solved && (
+            <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-red-100">
+              <XCircle className="mt-0.5 shrink-0 text-red-300" size={16} />
+              Not quite. That choice is marked off, so try another answer.
+            </p>
+          )}
+
+          {canUseQuizControls && solved && (
+            <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-emerald-100">
+              <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-300" size={16} />
+              Correct: {item.answer}
+            </p>
+          )}
+
+          {(!carousel || !hasChoices) && (
+            <p className="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-300">
+              <CheckCircle2 className="mt-0.5 shrink-0 text-amber-300" size={16} />
+              {item.answer}
             </p>
           )}
         </div>
       </div>
     </article>
   )
+}
+
+function buildQuizHint(item, attempts = []) {
+  const choices = Array.isArray(item.choices) ? item.choices : []
+  const remainingChoices = choices.filter((choice) => !attempts.includes(choice))
+  const removableChoice = remainingChoices.find((choice) => (
+    normalizeAnswer(choice) !== normalizeAnswer(item.answer)
+  ))
+
+  if (remainingChoices.length > 2 && removableChoice) {
+    return `You can rule out: ${removableChoice}`
+  }
+
+  return 'Focus on the wording of the question and compare the remaining choices carefully.'
 }
 
 function normalizeAnswer(value) {
