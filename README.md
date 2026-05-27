@@ -69,6 +69,8 @@ GROQ_API_KEY=replace-this-with-your-groq-api-key
 GROQ_MODEL=openai/gpt-oss-120b
 ```
 
+Use a unique `JWT_SECRET_KEY` for your local project. The placeholder value is only an example and should never be used for a real deployment.
+
 Start the Flask API on port `5002`:
 
 ```bash
