@@ -1,4 +1,4 @@
-import { CalendarDays, Clipboard, Flame, Sparkles, Trophy } from 'lucide-react'
+import { CalendarDays, ChevronDown, Clipboard, Flame, Sparkles, Trophy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import api from '../api/axios'
 import { useToast } from '../toast/ToastContext'
@@ -14,12 +14,21 @@ const levelClasses = [
 
 const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+const heatmapTiers = [
+  { label: 'Cold steel', range: '0 minutes', detail: 'No study sessions were logged that day.' },
+  { label: 'First spark', range: '1-29 minutes', detail: 'A short study session or quick review.' },
+  { label: 'Warming forge', range: '30-59 minutes', detail: 'A focused session with steady progress.' },
+  { label: 'Hot ember', range: '60-119 minutes', detail: 'A strong study day with deeper work.' },
+  { label: 'Full forge', range: '120+ minutes', detail: 'A high-intensity day with major study time.' },
+]
+
 export default function Heatmap() {
   // Heatmap turns saved study sessions into a portfolio-style yearly activity board.
   const currentYear = new Date().getFullYear()
   const [year, setYear] = useState(currentYear)
   const [heatmap, setHeatmap] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showTierGuide, setShowTierGuide] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
@@ -105,14 +114,46 @@ export default function Heatmap() {
             <h3 className="text-2xl font-black text-orange-50">{summary.total_sessions} study sessions in {heatmap.year}</h3>
             <p className="mt-1 text-sm text-slate-400">Each ember represents study minutes logged on that day.</p>
           </div>
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
-            <span>Less</span>
-            {[0, 1, 2, 3, 4].map((level) => (
-              <span key={level} className={`h-4 w-4 rounded-sm border ${levelClasses[level]}`} />
-            ))}
-            <span>More</span>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
+              <span>Less</span>
+              {[0, 1, 2, 3, 4].map((level) => (
+                <span key={level} className={`h-4 w-4 rounded-sm border ${levelClasses[level]}`} />
+              ))}
+              <span>More</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowTierGuide((current) => !current)}
+              className="flex items-center gap-2 rounded-md border border-orange-200/15 bg-black/20 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-200 transition hover:border-amber-300/40 hover:bg-orange-500/10 hover:text-amber-100"
+              aria-expanded={showTierGuide}
+            >
+              Color guide
+              <ChevronDown size={15} className={`transition ${showTierGuide ? 'rotate-180' : ''}`} />
+            </button>
           </div>
         </div>
+
+        {showTierGuide && (
+          <div className="mb-5 rounded-lg border border-orange-200/15 bg-black/20 p-4 shadow-[0_0_22px_rgba(249,115,22,0.08)]">
+            <div className="mb-3 flex items-center gap-2">
+              <Flame size={17} className="text-amber-300" />
+              <p className="text-sm font-black text-orange-50">How heatmap colors are forged</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+              {heatmapTiers.map((tier, index) => (
+                <div key={tier.label} className="rounded-md border border-white/10 bg-slate-950/35 p-3">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className={`h-4 w-4 rounded-sm border ${levelClasses[index]}`} />
+                    <span className="text-xs font-black uppercase tracking-[0.16em] text-amber-200">{tier.label}</span>
+                  </div>
+                  <p className="text-sm font-black text-orange-50">{tier.range}</p>
+                  <p className="mt-1 text-xs font-semibold leading-relaxed text-slate-400">{tier.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="overflow-x-auto pb-2">
           <div className="min-w-[48rem]">
