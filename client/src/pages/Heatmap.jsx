@@ -28,6 +28,7 @@ export default function Heatmap() {
   const [year, setYear] = useState(currentYear)
   const [heatmap, setHeatmap] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [activeTier, setActiveTier] = useState(null)
   const toast = useToast()
 
   useEffect(() => {
@@ -54,6 +55,12 @@ export default function Heatmap() {
   function handleYearChange(event) {
     setLoading(true)
     setYear(Number(event.target.value))
+  }
+
+  function handleLegendBlur(event) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setActiveTier(null)
+    }
   }
 
   async function copySnapshot() {
@@ -107,39 +114,54 @@ export default function Heatmap() {
         <Metric icon={Sparkles} label="Study time" value={`${summary.total_minutes} min`} detail={`${summary.total_hours} total hours`} />
       </section>
 
-      <section className="forge-card-hot forge-hover-lift overflow-hidden rounded-lg p-5">
+      <section className="forge-card-hot forge-hover-lift rounded-lg p-5">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="text-2xl font-black text-orange-50">{summary.total_sessions} study sessions in {heatmap.year}</h3>
             <p className="mt-1 text-sm text-slate-400">Each ember represents study minutes logged on that day.</p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
+            <div
+              className="flex items-center gap-2 rounded-md border border-orange-200/10 bg-slate-950/25 px-3 py-2 text-sm font-semibold text-slate-400"
+              onMouseLeave={() => setActiveTier(null)}
+              onBlur={handleLegendBlur}
+            >
               <span className="text-base">Less</span>
               {[0, 1, 2, 3, 4].map((level) => (
                 <button
                   key={level}
                   type="button"
-                  className={`group relative h-5 w-5 rounded-sm border transition duration-200 hover:-translate-y-1 hover:scale-125 hover:ring-2 hover:ring-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-200/80 ${levelClasses[level]}`}
+                  onMouseEnter={() => setActiveTier(level)}
+                  onFocus={() => setActiveTier(level)}
+                  className={`h-5 w-5 rounded-sm border transition duration-200 hover:-translate-y-1 hover:scale-125 hover:ring-2 hover:ring-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-200/80 ${
+                    activeTier === level ? '-translate-y-1 scale-125 ring-2 ring-amber-200/70' : ''
+                  } ${levelClasses[level]}`}
                   aria-label={`${heatmapTiers[level].label}: ${heatmapTiers[level].range}. ${heatmapTiers[level].detail}`}
-                >
-                  <span className="pointer-events-none absolute right-1/2 top-7 z-20 w-56 translate-x-1/2 scale-95 rounded-md border border-orange-200/15 bg-slate-950/95 p-3 text-left opacity-0 shadow-[0_12px_34px_rgba(0,0,0,0.35),0_0_24px_rgba(249,115,22,0.12)] transition duration-200 group-hover:scale-100 group-hover:opacity-100 group-focus:scale-100 group-focus:opacity-100">
-                    <span className="block text-[0.65rem] font-black uppercase tracking-[0.18em] text-amber-200">
-                      {heatmapTiers[level].label}
-                    </span>
-                    <span className="mt-1 block text-sm font-black text-orange-50">{heatmapTiers[level].range}</span>
-                    <span className="mt-1 block text-xs font-semibold leading-relaxed text-slate-400">
-                      {heatmapTiers[level].detail}
-                    </span>
-                  </span>
-                </button>
+                />
               ))}
               <span className="text-base">More</span>
             </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto pb-2">
+        {activeTier !== null && (
+          <div className="mb-5 rounded-lg border border-orange-200/15 bg-slate-950 p-4 shadow-[0_14px_40px_rgba(0,0,0,0.35),0_0_24px_rgba(249,115,22,0.1)]">
+            <div className="flex flex-wrap items-start gap-3">
+              <span className={`mt-1 h-5 w-5 shrink-0 rounded-sm border ${levelClasses[activeTier]}`} />
+              <div>
+                <p className="text-[0.7rem] font-black uppercase tracking-[0.2em] text-amber-200">
+                  {heatmapTiers[activeTier].label}
+                </p>
+                <p className="mt-1 text-lg font-black text-orange-50">{heatmapTiers[activeTier].range}</p>
+                <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-300">
+                  {heatmapTiers[activeTier].detail}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-x-auto pb-2 pt-2">
           <div className="min-w-[48rem]">
             <div className="relative ml-10 mb-2 h-6" style={{ width: `${heatmap.total_weeks * 1.05}rem` }}>
               {monthLabels.map((label) => (
