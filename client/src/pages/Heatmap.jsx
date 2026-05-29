@@ -114,7 +114,7 @@ export default function Heatmap() {
             <h3 className="text-2xl font-black text-orange-50">{summary.total_sessions} study sessions in {heatmap.year}</h3>
             <p className="mt-1 text-sm text-slate-400">Each ember represents study minutes logged on that day.</p>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-400">
               <span>Less</span>
               {[0, 1, 2, 3, 4].map((level) => (
@@ -125,11 +125,11 @@ export default function Heatmap() {
             <button
               type="button"
               onClick={() => setShowTierGuide((current) => !current)}
-              className="flex items-center gap-2 rounded-md border border-orange-200/15 bg-black/20 px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-200 transition hover:border-amber-300/40 hover:bg-orange-500/10 hover:text-amber-100"
+              className="flex items-center gap-1.5 rounded-md border border-orange-200/10 bg-black/15 px-2.5 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-amber-200/80 transition hover:border-amber-300/30 hover:bg-orange-500/10 hover:text-amber-100"
               aria-expanded={showTierGuide}
             >
               Color guide
-              <ChevronDown size={15} className={`transition ${showTierGuide ? 'rotate-180' : ''}`} />
+              <ChevronDown size={13} className={`transition ${showTierGuide ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>
