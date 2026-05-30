@@ -23,11 +23,15 @@ def create_app():
     # App factory: builds the Flask app, loads config, and wires every extension/route.
     app = Flask(__name__)
     app.config.from_object(Config)
-    # Development CORS whitelist: Vite may shift ports when one is already in use.
+    # CORS whitelist: local Vite dev servers plus the deployed Render frontend.
     vite_dev_origins = [
         origin
         for port in range(5173, 5180)
         for origin in (f"http://localhost:{port}", f"http://127.0.0.1:{port}")
+    ]
+    allowed_origins = [
+        *vite_dev_origins,
+        "https://focusforge-ai-frontend.onrender.com",
     ]
 
     db.init_app(app)
@@ -38,7 +42,7 @@ def create_app():
         app,
         resources={
             r"/api/*": {
-                "origins": vite_dev_origins,
+                "origins": allowed_origins,
                 "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
                 "allow_headers": ["Content-Type", "Authorization"],
             }
