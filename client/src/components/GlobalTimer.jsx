@@ -21,7 +21,7 @@ export default function GlobalTimer() {
 
   // The progress bar is derived from elapsed time, not stored separately.
   return (
-    <section className="rounded-lg border border-orange-200/20 bg-[#0b0e14]/92 p-3 shadow-[0_16px_46px_rgba(0,0,0,0.28),0_0_26px_rgba(249,115,22,0.1)] backdrop-blur-xl">
+    <section className="global-timer-card rounded-lg border border-orange-200/20 p-3 backdrop-blur-xl">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-orange-500/15 text-amber-300">

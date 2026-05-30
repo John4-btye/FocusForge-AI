@@ -20,8 +20,8 @@ export default function GlobalAI() {
   if (!showGlobalAi) return null
 
   return (
-    <section className="overflow-hidden rounded-lg border border-orange-200/20 bg-[#11151d]/94 shadow-[0_16px_46px_rgba(0,0,0,0.28),0_0_28px_rgba(249,115,22,0.1)] backdrop-blur-xl">
-      <div className="border-b border-orange-200/10 bg-gradient-to-r from-orange-500/12 via-black/10 to-amber-300/8 p-3">
+    <section className="global-ai-card overflow-hidden rounded-lg border border-orange-200/20 backdrop-blur-xl">
+      <div className="global-ai-header border-b border-orange-200/10 p-3">
         <div className="flex items-start justify-between gap-3">
           <button
             type="button"
@@ -60,7 +60,7 @@ export default function GlobalAI() {
                   className={`max-w-[92%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm leading-6 shadow-sm ${
                     message.role === 'user'
                       ? 'bg-gradient-to-br from-orange-500 to-amber-400 text-[#180c04]'
-                      : 'border border-orange-200/10 bg-black/26 text-slate-200'
+                      : 'global-ai-message border border-orange-200/10 bg-black/26 text-slate-200'
                   }`}
                 >
                   {message.content}
@@ -75,7 +75,7 @@ export default function GlobalAI() {
             )}
           </div>
 
-          <div className="border-t border-orange-200/10 bg-black/16 p-3">
+          <div className="global-ai-composer border-t border-orange-200/10 p-3">
             {error && <p className="mb-2 rounded-md border border-red-300/20 bg-red-950/35 px-3 py-2 text-xs font-semibold text-red-100">{error}</p>}
             <form
               onSubmit={(event) => {
