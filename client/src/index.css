@@ -465,6 +465,14 @@ textarea {
   color: #1c1510;
 }
 
+[data-theme='light'] .forge-input::placeholder {
+  color: rgba(111, 95, 81, 0.62);
+}
+
+[data-theme='light'] .forge-input:focus {
+  background: rgba(255, 255, 255, 0.94);
+}
+
 [data-theme='light'] .forge-button-subtle {
   border-color: rgba(194, 94, 20, 0.22);
   background: rgba(255, 247, 237, 0.74);
@@ -492,7 +500,8 @@ textarea {
 [data-theme='light'] .text-slate-200,
 [data-theme='light'] .text-slate-400,
 [data-theme='light'] .text-slate-300,
-[data-theme='light'] .text-slate-500 {
+[data-theme='light'] .text-slate-500,
+[data-theme='light'] .text-slate-600 {
   color: #6f5f51;
 }
 
@@ -508,16 +517,60 @@ textarea {
   color: #7f1d1d;
 }
 
+[data-theme='light'] .text-red-200 {
+  color: #991b1b;
+}
+
 [data-theme='light'] .text-emerald-100 {
   color: #064e3b;
 }
 
+[data-theme='light'] .text-emerald-200 {
+  color: #065f46;
+}
+
 [data-theme='light'] .bg-black\/15,
+[data-theme='light'] .bg-black\/16,
 [data-theme='light'] .bg-black\/18,
 [data-theme='light'] .bg-black\/20,
 [data-theme='light'] .bg-black\/24,
-[data-theme='light'] .bg-black\/30 {
-  background-color: rgba(255, 255, 255, 0.46);
+[data-theme='light'] .bg-black\/26,
+[data-theme='light'] .bg-black\/30,
+[data-theme='light'] .bg-black\/35,
+[data-theme='light'] .bg-black\/40 {
+  background-color: rgba(255, 255, 255, 0.58);
+}
+
+[data-theme='light'] .bg-slate-950,
+[data-theme='light'] .bg-slate-950\/25,
+[data-theme='light'] .bg-slate-950\/35,
+[data-theme='light'] .bg-\[\#090b10\]\/88,
+[data-theme='light'] .bg-\[\#0b0e14\]\/92,
+[data-theme='light'] .bg-\[\#11151d\]\/94,
+[data-theme='light'] .bg-\[\#111722\]\/95 {
+  background-color: rgba(255, 251, 244, 0.92);
+}
+
+[data-theme='light'] .bg-red-950\/35,
+[data-theme='light'] .bg-red-950\/40,
+[data-theme='light'] .bg-red-950\/50,
+[data-theme='light'] .bg-red-500\/15 {
+  background-color: rgba(254, 226, 226, 0.76);
+}
+
+[data-theme='light'] .bg-emerald-950\/30,
+[data-theme='light'] .bg-emerald-950\/40,
+[data-theme='light'] .bg-emerald-500\/15 {
+  background-color: rgba(209, 250, 229, 0.72);
+}
+
+[data-theme='light'] .border-white\/10,
+[data-theme='light'] .border-orange-200\/10,
+[data-theme='light'] .border-orange-200\/15,
+[data-theme='light'] .border-orange-200\/20,
+[data-theme='light'] .border-orange-300\/10,
+[data-theme='light'] .border-orange-300\/20 {
+  border-color: rgba(194, 94, 20, 0.18);
 }
 
 [data-theme='light'] .hover\:text-orange-100:hover,
@@ -528,6 +581,18 @@ textarea {
 
 [data-theme='light'] header {
   background: rgba(255, 248, 237, 0.88);
+}
+
+[data-theme='light'] aside nav,
+[data-theme='light'] aside section {
+  box-shadow:
+    0 18px 44px rgba(77, 45, 18, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+[data-theme='light'] .forge-row-hover:hover {
+  background: rgba(249, 115, 22, 0.08);
+  box-shadow: 0 10px 26px rgba(116, 64, 22, 0.1);
 }
 
 [data-theme='light'] .forge-hover-lift:hover {
