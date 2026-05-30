@@ -7,10 +7,10 @@ export default function BrandMark({ compact = false, className = '' }) {
       <img
         src={logo}
         alt="FocusForge AI logo"
-        className={`${compact ? 'h-11 w-11' : 'h-16 w-16'} rounded-md border border-orange-300/20 object-cover shadow-[0_0_28px_rgba(249,115,22,0.22)]`}
+        className={`${compact ? 'h-14 w-14' : 'h-20 w-20'} rounded-md border border-orange-300/25 object-cover shadow-[0_0_32px_rgba(249,115,22,0.26)]`}
       />
       <div>
-        <p className={`${compact ? 'text-base' : 'text-xl'} font-black tracking-wide text-orange-100`}>
+        <p className={`${compact ? 'text-lg' : 'text-2xl'} font-black tracking-wide text-orange-100`}>
           Focus<span className="text-orange-400">Forge</span> AI
         </p>
         {!compact && (
