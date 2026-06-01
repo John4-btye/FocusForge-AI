@@ -154,3 +154,7 @@ npm run build
 - The normal setup path only requires `flask db upgrade`; do not run `flask db init` for a fresh clone because migrations are already included.
 - The frontend keeps API calls centralized through Axios and stores auth, theme, AI, timer, and toast state in React context.
 - AI API keys stay on the Flask server and are never exposed to the browser.
+
+## Deployment
+
+- You can visit this link https://focusforge-ai-frontend.onrender.com for a personal live demo.
